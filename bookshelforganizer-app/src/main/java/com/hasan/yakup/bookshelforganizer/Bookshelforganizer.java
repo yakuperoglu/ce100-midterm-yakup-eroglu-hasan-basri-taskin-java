@@ -1641,6 +1641,128 @@ public class Bookshelforganizer {
 
         return borrowBook(bookId, pathFileBooks, pathFileHistories);
     }
+    /**
+     * Facilitates the process of borrowing a book by updating the book's status in
+     * the book data file and adding a loan history entry.
+     *
+     * @param bookId            The ID of the book to be borrowed.
+     * @param pathFileBooks     The file path of the book data.
+     * @param pathFileHistories The file path of loan history data.
+     * @return True if the book is successfully borrowed, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean borrowBook(Integer bookId, String pathFileBooks, String pathFileHistories)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> books = loadBooks(pathFileBooks);
+        Book relatedBook = new Book();
+
+        boolean isFound = false;
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+            for (Book book : books) {
+                if (!book.isBorrowed() && book.getId() == bookId
+                        && !book.getOwner().getId().equals(loggedUser.getId())) {
+                    book.setIsBorrowed(true);
+                    isFound = true;
+                    relatedBook = book;
+                    break;
+                }
+            }
+            oos.writeObject(books);
+        }
+
+        if (!isFound) {
+            out.println("The book is not available for borrowing or there is no book in this information.");
+            enterToContinue();
+            return false;
+        }
+        List<LoanedHistory> histories = loadLoanedHistories(pathFileHistories);
+
+        LoanedHistory newHistory = new LoanedHistory();
+        newHistory.setBookId(relatedBook.getId());
+        newHistory.setBookOwner(relatedBook.getOwner().getName(), relatedBook.getOwner().getSurname());
+        newHistory.setBookName(relatedBook.getTitle());
+        newHistory.setDebtorUser(loggedUser.getName(), loggedUser.getSurname());
+        newHistory.setBookOwnerId(relatedBook.getOwner().getId());
+        newHistory.setDebtorUserId(loggedUser.getId());
+        newHistory.setIsApproved(false);
+        newHistory.setHasGivenBack(false);
+        histories.add(newHistory);
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileHistories))) {
+            oos.writeObject(histories);
+        }
+
+        out.println("Book borrowed successfully.");
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * Displays the borrowed books to the console.
+     *
+     * @param pathFileHistories The file path of loan history data.
+     * @return True if the borrowed books are displayed successfully, false
+     *         otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean viewBorrowedBooks(String pathFileHistories)
+            throws FileNotFoundException, IOException, ClassNotFoundException, InterruptedException {
+        clearScreen();
+        writeBorrowedBooksToConsole(pathFileHistories);
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * Displays the books given by the user to the console.
+     *
+     * @param pathFileHistories The file path of loan history data.
+     * @return True if the given books are displayed successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean viewGivenBooks(String pathFileHistories)
+            throws FileNotFoundException, IOException, ClassNotFoundException, InterruptedException {
+        clearScreen();
+        writeGivenBooksToConsole(pathFileHistories);
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * Displays the wishlist management menu and handles user input to perform
+     * wishlist management operations.
+     *
+     * @return True if the wishlist management menu is displayed successfully, false
+     *         otherwise.
+     * @throws InterruptedException If the operation is interrupted.
+     * @throws IOException          If an I/O error occurs.
+     */
+    public boolean wishListMenu()
+            throws InterruptedException, IOException {
+        clearScreen();
+        out.println("WishList Management Menu\n\n");
+        out.println("1. Add Book to Wishlist");
+        out.println("2. Delete Book from Wishlist");
+        out.println("3. Mark as Acquired");
+        out.println("4. View Wishlist");
+        out.println("5. Search Wishlist");
+        out.println("6. Total Cost of Books in Wishlist");
+        out.println("7. Return to User Operations Menu");
+        out.print("Please enter a number to select: ");
+        return true;
+    }
 
 
 }
