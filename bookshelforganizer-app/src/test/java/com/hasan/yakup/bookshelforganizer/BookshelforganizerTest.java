@@ -308,4 +308,101 @@ public class BookshelforganizerTest {
     assertEquals(3, result.size());
   }
 
+  @Test
+  public void testLoadLoanedHistoriesBorrowedBooks_FileNotFound() throws ClassNotFoundException, IOException {
+    List<LoanedHistory> result = library.loadLoanedHistoriesBorrowedBooks("nonexistent_file.bin");
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testLoadLoanedHistoriesBorrowedBooks() throws FileNotFoundException, IOException, ClassNotFoundException {
+    // Prepare test data
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    testHistories.add(new LoanedHistory(3, "Book3", 3, "Owner3", 1, "User1", true, true));
+    testHistories.add(new LoanedHistory(4, "Book4", 4, "Owner4", 1, "User1", false, true));
+
+    // Write test data to file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    List<LoanedHistory> result = library.loadLoanedHistoriesBorrowedBooks(testFilePathHistories);
+
+    // Check if only loaned histories where user is the debtor and has not given
+    // back are loaded
+    assertEquals(2, result.size());
+  }
+
+  @Test
+  public void testFindLCS_WhenBothStringsAreEqual() {
+
+    double result = library.findLCS("abcd", "abcd");
+
+    assertEquals(1.0, result, 0.001);
+  }
+
+  @Test
+  public void testLoadLoanedHistoriesGivenBooks_FileNotFound() throws ClassNotFoundException, IOException {
+
+    // Call loadLoanedHistoriesGivenBooks method with non-existent file
+    List<LoanedHistory> result = library.loadLoanedHistoriesGivenBooks("nonexistent_file.bin");
+    assertEquals(0, result.size());
+
+  }
+
+  @Test
+  public void testLoadLoanedHistoriesGivenBooks() throws FileNotFoundException, IOException, ClassNotFoundException {
+
+    // Prepare test data
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    testHistories.add(new LoanedHistory(3, "Book3", 1, "Owner1", 2, "User2", false, true));
+    testHistories.add(new LoanedHistory(4, "Book4", 2, "Owner2", 1, "User1", false, true));
+
+    // Write test data to file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    // Call loadLoanedHistoriesGivenBooks method
+    List<LoanedHistory> result = library.loadLoanedHistoriesGivenBooks(testFilePathHistories);
+
+    // Check if only loaned histories where user is the owner and has not given back
+    // are loaded
+    assertEquals(2, result.size());
+  }
+
+  @Test
+  public void testLoadLoanedHistories_FileNotFound() throws ClassNotFoundException, IOException {
+
+    // Call loadLoanedHistories method with non-existent file
+    List<LoanedHistory> result = library.loadLoanedHistories("nonexistent_file.bin");
+    assertEquals(0, result.size());
+
+  }
+
+  @Test
+  public void testLoadLoanedHistories() throws FileNotFoundException, IOException, ClassNotFoundException {
+
+    // Prepare test data
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    testHistories.add(new LoanedHistory(3, "Book3", 1, "Owner1", 2, "User2", false, true));
+
+    // Write test data to file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    // Call loadLoanedHistories method
+    List<LoanedHistory> result = library.loadLoanedHistories(testFilePathHistories);
+
+    // Check if all loaned histories are loaded
+    assertEquals(testHistories.size(), result.size());
+  }
+
 }
