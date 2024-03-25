@@ -2151,6 +2151,124 @@ public class Bookshelforganizer {
         String searchKey = scanner.nextLine();
         return searchWishlist(pathFileWishlist, searchKey);
     }
+    /**
+     * Searches for a book in the wishlist based on a search key.
+     *
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @param searchKey        The title of the book to search for in the wishlist.
+     * @return True if the book is found in the wishlist, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    // This function searches for a book in the wishlist based on a search key.
+    // It handles the necessary file operations and searching logic.
+    public boolean searchWishlist(String pathFileWishlist, String searchKey)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        // Load the wishlist from the given file path.
+        List<Book> wishlist = loadWishlistedBooks(pathFileWishlist);
+
+        // Check if the wishlist is empty. If yes, print a message and stop.
+        if (wishlist.isEmpty()) {
+            out.println("Wishlist is empty.");
+            enterToContinue();
+            return false;
+        }
+
+        // Sort the wishlist because binary search needs the list to be sorted.
+        randomizedQuickSortBookIds(wishlist, 0, wishlist.size() - 1);
+
+        // Perform a binary search on the sorted list to find the book.
+        int index = binarySearch(wishlist, searchKey, 0, wishlist.size() - 1);
+
+        // If the book is found, print its details. Otherwise, say it wasn't found.
+        if (index != -1) {
+            out.println("Book found in wishlist:");
+            // Write book to console
+            out.println(
+                    "ID: " + wishlist.get(index).getId() + ", Title: " + wishlist.get(index).getTitle() + ", Author: "
+                            + wishlist.get(index).getAuthor() + ", Genre: " + wishlist.get(index).getGenre());
+            enterToContinue();
+            return true;
+        } else {
+            out.println("Book not found in wishlist.");
+            enterToContinue();
+            return false;
+        }
+    }
+
+    /**
+     * This is a helper function for performing a recursive binary search.
+     * It looks for a specific book in the wishlist.
+     *
+     * @param wishlist  The list of books in the wishlist.
+     * @param searchKey The title of the book to search for in the wishlist.
+     * @param left      The left index of the sublist to search.
+     * @param right     The right index of the sublist to search.
+     * @return The index of the book in the wishlist if found, otherwise -1.
+     */
+    // This is a helper function for performing a recursive binary search.
+    // It looks for a specific book in the wishlist.
+    public int binarySearch(List<Book> wishlist, String searchKey, int left, int right) {
+        // If the right index is greater than or equal to the left,
+        // it means we still have elements to check.
+        if (right >= left) {
+            // Calculate the middle index of the current section.
+            int mid = left + (right - left) / 2;
+
+            // Check if the book at the middle index is the one we're searching for.
+            // If yes, return its index.
+            if (wishlist.get(mid).getTitle().equalsIgnoreCase(searchKey)) {
+                return mid;
+            }
+
+            // If the search key is smaller than the book at mid, search in the left
+            // sub-array.
+            if (wishlist.get(mid).getTitle().compareToIgnoreCase(searchKey) > 0) {
+                return binarySearch(wishlist, searchKey, left, mid - 1);
+            }
+
+            // Otherwise, search in the right sub-array.
+            return binarySearch(wishlist, searchKey, mid + 1, right);
+        }
+
+        // If we reach here, it means the element is not present in the list. Return -1.
+        return -1;
+    }
+
+    /**
+     * Finds books in the library that are similar to those in the user's
+     * collection.
+     *
+     * @param pathFileBooks The file path of the library book data.
+     * @return A list of books in the library that are similar to those in the
+     *         user's collection.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public List<Book> suggestBooksToBorrow(String pathFileBooks)
+            throws ClassNotFoundException, IOException, InterruptedException {
+        clearScreen();
+        // Find books both in the library and the user's collection
+        List<Book> commonBooks = findCommonBooks(pathFileBooks);
+
+        // If there are no common books, return an empty list
+        if (commonBooks.isEmpty()) {
+            out.println("There are no books to suggest..");
+            enterToContinue();
+            return commonBooks;
+        }
+
+        // Write the common books to the console
+        for (Book book : commonBooks) {
+            out.println("ID: " + book.getId() + ", Title: " + book.getTitle() + ", Author: " + book.getAuthor()
+                    + ", Genre: " + book.getGenre());
+        }
+        enterToContinue();
+        return commonBooks;
+    }
 
 
 }
