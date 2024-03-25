@@ -1537,4 +1537,76 @@ public class BookshelforganizerTest {
     assertTrue(res);
   }
 
+  @Test
+  public void testBinarySearch_SearchKeySmaller() throws FileNotFoundException, IOException {
+    // Prepare test data
+    List<Book> wishlist = createTestFileWishlists();
+
+    // Call the method with a search key that should fall in the left sub-array
+    int result = library.binarySearch(wishlist, "Cat's Cradle", 0, wishlist.size() - 1);
+
+    // Assert that the result is the expected index
+    assertEquals(-1, result);
+  }
+
+  private List<Book> createTestFileBooks() throws FileNotFoundException, IOException {
+    List<User> users = createTestFileUsers();
+    List<Book> testBooks = new ArrayList<>();
+    testBooks.add(new Book(1, "Book1", "Necati", "Horror", users.get(1), 125));
+    testBooks.add(new Book(2, "Book2", "Ahmet bera", "Advanture", users.get(2), 115));
+    testBooks.add(new Book(3, "Book3", "Yakup ", "Horror", users.get(0), 5));
+    testBooks.add(new Book(4, "Book4", "Enes", "Science Fiction", users.get(1), 5));
+
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathBooks))) {
+      oos.writeObject(testBooks);
+    }
+    return testBooks;
+  }
+
+  private List<Book> createTestFileWishlists() throws FileNotFoundException, IOException {
+    List<User> users = createTestFileUsers();
+    List<Book> testBooks = new ArrayList<>();
+    testBooks.add(new Book(1, "Book1", "Necati", "Horror", users.get(1), 124));
+    testBooks.add(new Book(2, "Book2", "Ahmet bera", "Advanture", users.get(2), 144));
+    testBooks.add(new Book(3, "Book3", "Yakup ", "Horror", users.get(0), 414));
+    testBooks.add(new Book(4, "Book4", "Enes", "Science Fiction", users.get(1), 14));
+
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathWishlist))) {
+      oos.writeObject(testBooks);
+    }
+    return testBooks;
+  }
+
+  private List<User> createTestFileUsers() throws FileNotFoundException, IOException {
+    List<User> testUsers = new ArrayList<>();
+    testUsers.add(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+    testUsers.add(new User(2, "Yakup", "Eroğlu", "yakup@gmail.com", "Qwe123!"));
+    testUsers.add(new User(3, "Ahmet", "Bera", "ahmet@gmail.com", "Qwe123!"));
+
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathUsers))) {
+      oos.writeObject(testUsers);
+    }
+    return testUsers;
+  }
+
+  private void cleanupTestDataBook() throws IOException {
+    deleteFile(testFilePathBooks);
+  }
+
+  private void setLoggedUser() {
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+  }
+
+  private void cleanupTestDataUser() throws IOException {
+    deleteFile(testFilePathUsers);
+  }
+
+  private void cleanupTestDataWishlist() throws IOException {
+    deleteFile(testFilePathWishlist);
+  }
+
+  private void deleteFile(String filePath) throws IOException {
+    Files.deleteIfExists(Paths.get(filePath));
+  }
+
 }
