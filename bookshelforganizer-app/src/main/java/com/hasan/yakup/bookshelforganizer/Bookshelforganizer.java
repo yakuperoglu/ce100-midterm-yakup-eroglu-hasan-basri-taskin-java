@@ -1763,6 +1763,195 @@ public class Bookshelforganizer {
         out.print("Please enter a number to select: ");
         return true;
     }
+    
+    /**
+     * Manages the wishlist operations such as adding, deleting, marking as
+     * acquired, viewing, searching, and calculating the total cost.
+     *
+     * @param pathFileBooks    The file path of the book data.
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return False to return to the user operations menu.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean wishList(String pathFileBooks, String pathFileWishlist)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        int choice;
+
+        while (true) {
+            clearScreen();
+            wishListMenu();
+
+            choice = tryParseInt(scanner.nextLine());
+
+            if (choice == -1) {
+                handleInputError();
+                enterToContinue();
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    addBookToWishListMenu(pathFileWishlist);
+                    break;
+
+                case 2:
+                    deleteBookFromWishListMenu(pathFileWishlist);
+                    break;
+
+                case 3:
+                    markAsAcquiredMenu(pathFileBooks, pathFileWishlist);
+                    break;
+                case 4:
+                    viewWishList(pathFileWishlist);
+                    break;
+                case 5:
+                    searchWishlistMenu(pathFileWishlist);
+                    break;
+                case 6:
+                    calculateTotalCost(pathFileWishlist);
+                    break;
+
+                case 7:
+                    return false;
+
+                default:
+                    out.println("Invalid choice. Please try again.");
+                    enterToContinue();
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Calculates the minimum total cost for the books in the wishlist using the
+     * Matrix Chain Multiplication Order algorithm.
+     *
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the total cost is calculated successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public int matrixChainOrder(int p[], int i, int j) {
+        if (i == j)
+            return 0;
+
+        int min = Integer.MAX_VALUE;
+
+        // Matris zincirinin i ve j arasındaki her parçaya ayrılması ve minimum
+        // maliyetin hesaplanması
+        for (int k = i; k < j; k++) {
+            int count = matrixChainOrder(p, i, k) + matrixChainOrder(p, k + 1, j) + p[i - 1] * p[k] * p[j];
+
+            if (count < min)
+                min = count;
+        }
+
+        // Minimum maliyetin döndürülmesi
+        return min;
+    }
+
+    /**
+     * Displays the menu for adding a book to the wishlist and handles user input to
+     * perform the operation.
+     *
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully added to the wishlist, false
+     *         otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean calculateTotalCost(String pathFileWishlist)
+            throws FileNotFoundException, ClassNotFoundException, IOException {
+        List<Book> books = loadWishlist(pathFileWishlist, loggedUser.getId());
+        int n = books.size();
+
+        // Kitapların maliyetlerini içeren dizi
+        int[] costs = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            costs[i] = books.get(i).getPrice();
+        }
+
+        // Matrix Zinciri Çarpım Sırası Hesaplama algoritmasını kullanarak toplam
+        // maliyetin hesaplanması
+        out.println("Total cost: " + matrixChainOrder(costs, 1, n - 1));
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * Adds a book to the wishlist.
+     *
+     * @param newBook          The book to be added to the wishlist.
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully added to the wishlist, false
+     *         otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public boolean addBookToWishListMenu(String pathFileWishlist)
+            throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+        clearScreen();
+        Book newBook = new Book();
+
+        out.print("Enter book name: ");
+        newBook.setTitle(scanner.nextLine());
+
+        out.print("Enter author: ");
+        newBook.setAuthor(scanner.nextLine());
+
+        out.print("Enter Genre: ");
+        newBook.setGenre(scanner.nextLine());
+
+        out.print("Enter Cost: ");
+        int cost = tryParseInt(scanner.nextLine());
+        if (cost == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
+        newBook.setPrice(cost);
+
+        return addBookToWishList(newBook, pathFileWishlist);
+    }
+
+    /**
+     * Adds a book to the wishlist.
+     *
+     * @param newBook          The book to be added to the wishlist.
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully added to the wishlist, false
+     *         otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public boolean addBookToWishList(Book newBook, String pathFileWishlist)
+            throws FileNotFoundException, ClassNotFoundException, IOException {
+        List<Book> wishlists = loadWishlist(pathFileWishlist);
+
+        newBook.setId(getNewWishlistId(pathFileWishlist));
+        newBook.setOwner(loggedUser);
+        newBook.setIsBorrowed(false);
+
+        wishlists.add(newBook);
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileWishlist))) {
+            oos.writeObject(wishlists);
+        }
+
+        return true;
+    }
 
 
 }
