@@ -740,4 +740,52 @@ public class BookshelforganizerTest {
     assertEquals(res, 0);
   }
 
+  @Test
+  public void testMainMenu_InvalidChoiceShouldReturnZero()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streamsqweqwe
+
+    String inputString = "5\n3\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    int res = library.mainMenu(testFilePathUsers, testFilePathBooks, testFilePathHistories, testFilePathWishlist);
+    assertEquals(res, 0);
+  }
+
+  @Test
+  public void testMainMenu_ShouldEnterEveryFunctionAndReturnZero()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "2\nqwe\nqwe\nqwe\nqwe\n1\nqwe\nqwe\n4\n3\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    int res = library.mainMenu(testFilePathUsers, testFilePathBooks, testFilePathHistories, testFilePathWishlist);
+    assertEquals(res, 0);
+  }
+
+  @Test
+  public void testBookCataloging_InvalidInputShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "qwe\n8\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.bookCataloging(testFilePathBooks);
+    assertFalse(res);
+  }
+
 }
