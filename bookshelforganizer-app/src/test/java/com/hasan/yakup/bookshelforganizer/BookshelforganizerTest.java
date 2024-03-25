@@ -569,4 +569,69 @@ public class BookshelforganizerTest {
     assertEquals(1, result, 0.001);
   }
 
+  @Test
+  public void testFindLCS_WhenNoCommonSubsequence() {
+
+    double result = library.findLCS("abc", "def");
+
+    assertEquals(0.0, result, 0.001);
+  }
+
+  @Test
+  public void testWriteBooksToConsole_BooksNotEmpty() throws ClassNotFoundException, IOException {
+    createTestFileBooks();
+
+    boolean result = library.writeBooksToConsole(testFilePathBooks);
+
+    assertTrue(result);
+  }
+
+  @Test
+  public void testWriteWishlistToConsole_WishlistNotEmpty() throws ClassNotFoundException, IOException {
+    createTestFileWishlists();
+
+    List<Book> result = library.loadWishlistedBooks(testFilePathWishlist);
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  public void testWriteWishlistToConsole_WishlistEmpty() throws ClassNotFoundException, IOException {
+    createTestFileWishlists();
+    boolean result = library.writeWishlistToConsole("test_empty_wishlist.bin");
+
+    assertFalse(result);
+  }
+
+  @Test
+  public void testWriteBorrowedBooksToConsole_NoBooksBorrowed() throws IOException, ClassNotFoundException {
+
+    boolean result = library.writeBorrowedBooksToConsole("test_no_borrowed_books.bin");
+
+    assertFalse(result);
+  }
+
+  @Test
+  public void testWriteGivenBooksToConsole_NoBooksGiven_ReturnFalse()
+      throws FileNotFoundException, IOException, ClassNotFoundException {
+
+    boolean result = library.writeGivenBooksToConsole("test_no_given_books.bin");
+
+    assertFalse(result);
+  }
+
+  @Test
+  public void testWriteGivenBooksToConsole_HasGivenBooks_ReturnTrue()
+      throws FileNotFoundException, IOException, ClassNotFoundException {
+    // Prepare test data
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 2, "User1", false, true));
+    // Write test data to file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+    boolean result = library.writeGivenBooksToConsole(testFilePathHistories);
+
+    assertTrue(result);
+  }
+
 }
