@@ -1130,4 +1130,144 @@ public class BookshelforganizerTest {
     assertFalse(res);
   }
 
+  @Test
+  public void testGiveBackBook_HighId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    // Create a history file
+
+    createTestFileBooks();
+
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    setLoggedUser();
+
+    // Call the method that handles menu
+    boolean res = library.giveBackBook(1123, testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testGiveBackBook_ValidId_ShouldReturnTrue()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Create a history file
+
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 2, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 1, "User2", false, true));
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    List<Book> testBooks = new ArrayList<>();
+    testBooks.add(
+        new Book(1, "Book1", "Necati", "Horror", new User(2, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"), 124));
+    testBooks.add(
+        new Book(1, "Book1", "Necati", "Horror", new User(1, "Yakup", "Eroglu", "yakup@gmail.com", "Qwe123!"), 124));
+
+    testBooks.get(0).setIsBorrowed(true);
+
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathBooks))) {
+      oos.writeObject(testBooks);
+    }
+    setLoggedUser();
+
+    // Call the method that handles menu
+    boolean res = library.giveBackBook(1, testFilePathBooks, testFilePathHistories);
+    assertTrue(res);
+  }
+
+  @Test
+  public void testBorrowBookMenu_EmptyBooks_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Create a history file
+
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    // Write the history file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    String inputString = "1\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.borrowBookMenu(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testBorrowBookMenu_ValıdId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Create a history file
+    createTestFileBooks();
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    // Write the history file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    String inputString = "1\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.borrowBookMenu(testFilePathBooks, testFilePathHistories);
+    assertTrue(res);
+  }
+
+  @Test
+  public void testBorrowBook_EmptyBooks_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Create a history file
+
+    String inputString = "1\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.borrowBookMenu(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testBorrowBook_ValidBookId_ShouldReturnTrue()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    createTestFileBooks();
+
+    // Call the method that handles menu
+    boolean res = library.borrowBook(1, testFilePathBooks, testFilePathHistories);
+    assertTrue(res);
+  }
+
+  @Test
+  public void testBorrowBook_HighBookId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    createTestFileBooks();
+
+    // Call the method that handles menu
+    boolean res = library.borrowBook(132132, testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
 }
