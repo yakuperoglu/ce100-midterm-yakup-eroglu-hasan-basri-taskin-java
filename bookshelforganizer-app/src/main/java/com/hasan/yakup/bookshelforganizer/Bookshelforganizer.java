@@ -2326,7 +2326,55 @@ public class Bookshelforganizer {
       // Return the ratio of the LCS to the length of the shorter string
       return (double) dp[str1.length()][str2.length()] / Math.min(str1.length(), str2.length());
   }
+  /**
+     * Writes the books owned by the user to the console.
+     *
+     * @param pathFileBooks The file path of the user's book data.
+     * @return true if books are written successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file path is invalid.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean writeBooksToConsole(String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> books = loadOwnedBooks(pathFileBooks);
+        if (books.isEmpty()) {
+            out.println("There are no books you own..");
+            return false;
+        }
+        for (Book book : books) {
+            out.println("ID: " + book.getId() + ", Title: " + book.getTitle() + ", Author: " + book.getAuthor()
+                    + ", Genre: " + book.getGenre());
+        }
+        return true;
+    }
 
+    /**
+     * Writes the books in the wishlist to the console.
+     *
+     * @param pathFileWishlist The file path of the user's wishlist data.
+     * @return true if wishlist is written successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file path is invalid.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean writeWishlistToConsole(String pathFileWishlist)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> wishlist = loadWishlistedBooks(pathFileWishlist);
+
+        if (wishlist.isEmpty()) {
+            out.println("You haven't added any books to your wish list..");
+            return false;
+        }
+
+        for (Book book : wishlist) {
+            out.println("ID: " + book.getId() + ", Title: " + book.getTitle() + ", Author: " + book.getAuthor()
+                    + ", Genre: " + book.getGenre());
+        }
+        return true;
+    }
 
 
 }
