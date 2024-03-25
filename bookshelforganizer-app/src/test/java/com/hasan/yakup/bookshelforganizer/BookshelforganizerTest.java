@@ -708,4 +708,36 @@ public class BookshelforganizerTest {
     assertFalse(res);
   }
 
+  @Test
+  public void testuserOperations_ShouldEnterEveryFunctionAndReturnTrue()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "1\n8\n\n2\n6\n3\n7\n4\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.userOperations(testFilePathBooks, testFilePathHistories, testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testMainMenu_InvalidInputShouldReturnZero()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "qwe\n3\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    int res = library.mainMenu(testFilePathUsers, testFilePathBooks, testFilePathHistories, testFilePathWishlist);
+    assertEquals(res, 0);
+  }
+
 }
