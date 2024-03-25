@@ -901,4 +901,122 @@ public class BookshelforganizerTest {
     assertFalse(res);
   }
 
+  @Test
+  public void testAddBookMenu_InvalidInputCostReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "Example\nExample\nExample\nExample\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.addBookMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testDeleteBookMenu_UserDontHaveAnyBook_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    // Call the method that handles menu
+    boolean res = library.deleteBookMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testDeleteBookMenu_InvalidBookId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    String inputString = "qwe\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    createTestFileBooks();
+    // Call the method that handles menu
+    boolean res = library.deleteBookMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testUpdateBookMenu_UserDontHaveAnyBook_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    // Call the method that handles menu
+    boolean res = library.updateBookMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testUpdateBookMenu_InvalidBookId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    String inputString = "qwe\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    createTestFileBooks();
+    // Call the method that handles menu
+    boolean res = library.updateBookMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testUpdateBookMenu_InvalidCost_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileBooks();
+
+    String inputString = "1\nUpdated\nqwe\nqwe\nqwe\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.updateBookMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testSelectBooksByPriceMenu_InvalidBudget_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileBooks();
+
+    String inputString = "qwe";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.selectBooksByPriceMenu(testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testUpdateBook_HighId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileBooks();
+    Book newBook = new Book(123123123, "Updated", "Updated", "Updated",
+        new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"), 13);
+
+    boolean res = library.updateBook(newBook, testFilePathBooks);
+    assertFalse(res);
+  }
+
 }
