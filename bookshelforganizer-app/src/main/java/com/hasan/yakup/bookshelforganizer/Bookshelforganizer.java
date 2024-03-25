@@ -1092,6 +1092,241 @@ public class Bookshelforganizer {
         }
         return result;
     }
+    
+    /**
+     * Displays the menu for adding a new book, prompts the user for book details,
+     * and adds the book to the library system.
+     * 
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book was added successfully, false otherwise.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean addBookMenu(String pathFileBooks) throws InterruptedException, IOException, ClassNotFoundException {
+      clearScreen();
+      Book newBook = new Book();
 
+      out.print("Enter book name: ");
+      newBook.setTitle(scanner.nextLine());
+
+      out.print("Enter author: ");
+      newBook.setAuthor(scanner.nextLine());
+
+      out.print("Enter Genre: ");
+      newBook.setGenre(scanner.nextLine());
+
+      out.print("Enter Cost: ");
+      int cost = tryParseInt(scanner.nextLine());
+      if (cost == -1) {
+          handleInputError();
+          enterToContinue();
+          return false;
+      }
+      newBook.setPrice(cost);
+
+      boolean result = addBook(newBook, pathFileBooks);
+      if (result)
+          out.println("Book added successfully.");
+      enterToContinue();
+      return result;
+  }
+
+  /**
+   * Adds a new book to the library system.
+   * 
+   * @param newBook       The book to be added.
+   * @param pathFileBooks The file path of the book data.
+   * @return True if the book was added successfully, false otherwise.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean addBook(Book newBook, String pathFileBooks)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+      List<Book> books = loadBooks(pathFileBooks);
+
+      newBook.setId(getNewBookId(pathFileBooks));
+      newBook.setOwner(loggedUser);
+      newBook.setIsBorrowed(false);
+
+      books.add(newBook);
+
+      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+          oos.writeObject(books);
+      }
+
+      return true;
+  }
+
+  /**
+   * Displays the menu for deleting a book, prompts the user to select a book
+   * for deletion, and deletes the selected book from the library system.
+   * 
+   * @param pathFileBooks The file path of the book data.
+   * @return True if the book was deleted successfully, false otherwise.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   * @throws InterruptedException   If the operation is interrupted.
+   */
+  public boolean deleteBookMenu(String pathFileBooks)
+          throws FileNotFoundException, IOException, ClassNotFoundException, InterruptedException {
+      clearScreen();
+      boolean isUserHasBooks = writeBooksToConsole(pathFileBooks);
+      if (!isUserHasBooks) {
+          enterToContinue();
+          return false;
+      }
+      out.print("Enter a number to delete book: ");
+
+      int bookId = tryParseInt(scanner.nextLine());
+
+      if (bookId == -1) {
+          handleInputError();
+          enterToContinue();
+          return false;
+      }
+
+      return deleteBook(bookId, pathFileBooks);
+  }
+
+  /**
+   * Deletes a book from the library system based on the provided book ID.
+   * 
+   * @param bookId        The ID of the book to be deleted.
+   * @param pathFileBooks The file path of the book data.
+   * @return True if the book was deleted successfully, false otherwise.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean deleteBook(int bookId, String pathFileBooks)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+      List<Book> books = loadBooks(pathFileBooks);
+      boolean isFound = false;
+
+      for (Book book : books) {
+          if (book.getId() == bookId) {
+              isFound = true;
+              books.remove(book);
+              break;
+          }
+      }
+
+      if (isFound) {
+          try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+              oos.writeObject(books);
+          }
+          out.println("Book with ID '" + bookId + "' has been deleted successfully.");
+          enterToContinue();
+          return true;
+      }
+
+      out.println("There is no book with ID '" + bookId + "'.");
+      enterToContinue();
+      return false;
+  }
+
+  /**
+   * Displays the menu for updating a book, prompts the user to select a book
+   * for updating, and allows the user to modify the book's details.
+   * 
+   * @param pathFileBooks The file path of the book data.
+   * @return True if the book was updated successfully, false otherwise.
+   * @throws IOException            If an I/O error occurs.
+   * @throws InterruptedException   If the operation is interrupted.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean updateBookMenu(String pathFileBooks)
+          throws IOException, InterruptedException, ClassNotFoundException {
+      clearScreen();
+      boolean isUserHasBooks = writeBooksToConsole(pathFileBooks);
+      if (!isUserHasBooks) {
+          enterToContinue();
+          return false;
+      }
+      out.print("Enter a number to update book: ");
+
+      int bookId = tryParseInt(scanner.nextLine());
+
+      if (bookId == -1) {
+          handleInputError();
+          enterToContinue();
+          return false;
+      }
+
+      Book newBook = new Book();
+
+      newBook.setId(bookId);
+
+      out.print("Enter the new name for the book: ");
+      newBook.setTitle(scanner.nextLine());
+
+      out.print("Enter author name: ");
+      newBook.setAuthor(scanner.nextLine());
+
+      out.print("Enter genre: ");
+      newBook.setGenre(scanner.nextLine());
+
+      out.print("Enter Cost: ");
+      int cost = tryParseInt(scanner.nextLine());
+      if (cost == -1) {
+          handleInputError();
+          enterToContinue();
+          return false;
+      }
+      newBook.setPrice(cost);
+
+      updateBook(newBook, pathFileBooks);
+      return true;
+  }
+
+  /**
+   * Updates the details of a book in the library system.
+   * 
+   * @param newBook       The updated book object.
+   * @param pathFileBooks The file path of the book data.
+   * @return True if the book was updated successfully, false otherwise.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean updateBook(Book newBook, String pathFileBooks)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+      List<Book> books = loadBooks(pathFileBooks);
+      boolean isFound = false;
+
+      for (Book book : books) {
+          if (book.getId() == newBook.getId()) {
+              book.setTitle(newBook.getTitle());
+              book.setAuthor(newBook.getAuthor());
+              book.setGenre(newBook.getGenre());
+              book.setPrice(newBook.getPrice());
+              isFound = true;
+              break;
+          }
+      }
+
+      if (isFound) {
+          // Save book list to binary file
+          try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+              oos.writeObject(books);
+          }
+          out.println("Book with ID '" + newBook.getId() + "' has been updated successfully.");
+      }
+
+      if (!isFound)
+          out.println("There is no book with the specified ID.");
+
+      enterToContinue();
+      return isFound;
+  }
 
 }
