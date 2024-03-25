@@ -194,4 +194,55 @@ public class BookshelforganizerTest {
     assertFalse(result);
   }
 
+  @Test
+  public void testTryParseInt_ValidInput() {
+    // Test with a valid integer string
+    String validInput = "123";
+    int result = library.tryParseInt(validInput);
+    assertEquals(123, result);
+  }
+
+  @Test
+  public void testTryParseInt_InvalidInput() {
+    // Test with an invalid integer string
+    String invalidInput = "abc";
+    int result = library.tryParseInt(invalidInput);
+    assertEquals(-1, result);
+  }
+
+  @Test
+  public void testTryParseInt_EmptyInput() {
+    // Test with an empty string
+    String emptyInput = "";
+    int result = library.tryParseInt(emptyInput);
+    assertEquals(-1, result);
+  }
+
+  @Test
+  public void testEnterToContinue() {
+    // Simulate user pressing enter
+    boolean result = library.enterToContinue();
+
+    // Check if the message is printed
+    assertTrue(outContent.toString().contains("Press enter to continue..."));
+
+    // Check if the result is true
+    assertTrue(result);
+  }
+
+  @Test
+  public void testEnterToContinue_NotTestMode() throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+
+    // Call the method that handles register menu
+    boolean res = library.enterToContinue();
+    assertTrue(res);
+  }
+
 }
