@@ -245,4 +245,67 @@ public class BookshelforganizerTest {
     assertTrue(res);
   }
 
+  @Test
+  public void testClearScreen_NonWindowsOS() throws IOException, InterruptedException {
+    // Prepare
+    System.setProperty("os.name", "Linux"); // Simulating a non-Windows OS
+
+    // Mock System.out
+
+    // Call the method
+    library.clearScreen();
+  }
+
+  @Test
+  public void testLoadOwnedBooks() throws FileNotFoundException, IOException, ClassNotFoundException {
+    createTestFileBooks();
+    // Call loadOwnedBooks method
+    List<Book> result = library.loadOwnedBooks(testFilePathBooks);
+
+    // Check if only books owned by user with id 1 are loaded
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  public void testLoadBooks_FileNotFound() throws FileNotFoundException, ClassNotFoundException, IOException {
+    List<Book> result = library.loadBooks("nonexistent_file.bin", 1);
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testLoadWishlist_FileNotFound() throws FileNotFoundException, ClassNotFoundException, IOException {
+    // Call loadWishlist method with non-existent file
+    List<Book> result = library.loadWishlist("nonexistent_file.bin", 1);
+    assertEquals(0, result.size());
+
+  }
+
+  @Test
+  public void testLoadWishlistedBooks() throws FileNotFoundException, IOException, ClassNotFoundException {
+    createTestFileWishlists();
+
+    List<Book> result = library.loadWishlistedBooks(testFilePathWishlist);
+
+    // Check if only books in the wishlist of user with id 1 are loaded
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  public void testLoadBooksExcludingUser_FileNotFound() throws ClassNotFoundException, IOException {
+    // Call loadBooksExcludingUser method with non-existent file
+    List<Book> result = library.loadBooksExcludingUser("nonexistent_file.bin");
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testLoadBooksExcludingUser() throws ClassNotFoundException, IOException {
+    createTestFileBooks();
+
+    // Call loadBooksExcludingUser method
+    List<Book> result = library.loadBooksExcludingUser(testFilePathBooks);
+
+    // Check if books not owned by user with id 1 are loaded
+    assertEquals(3, result.size());
+  }
+
 }
