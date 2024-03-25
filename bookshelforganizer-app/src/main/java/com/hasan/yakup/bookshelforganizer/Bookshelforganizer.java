@@ -2057,5 +2057,100 @@ public class Bookshelforganizer {
 
         return markAsAcquired(bookId, pathFileBooks, pathFileWishlist);
     }
+    
+    /**
+     * Marks a book in the wishlist as acquired, moving it to the user's books.
+     *
+     * @param bookId           The ID of the book to be marked as acquired.
+     * @param pathFileBooks    The file path of the book data.
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully marked as acquired and moved to the
+     *         user's books, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public boolean markAsAcquired(Integer bookId, String pathFileBooks, String pathFileWishlist)
+            throws FileNotFoundException, ClassNotFoundException, IOException {
+        List<Book> wishlist = loadWishlist(pathFileWishlist);
+        Book bookToMove = null;
+
+        // Check if is there any book with the given ID in the wishlist
+        for (Book book : wishlist) {
+            if (book.getId() == bookId) {
+                bookToMove = book;
+                break;
+            }
+        }
+
+        if (bookToMove == null) {
+            out.println("Book not found in wishlist.");
+            enterToContinue();
+            return false;
+        }
+
+        // Delete book from wishlist
+        wishlist.remove(bookToMove);
+
+        List<Book> books = loadBooks(pathFileBooks);
+
+        // add the wishlisted book to end of the books list
+        bookToMove.setId(getNewBookId(pathFileBooks));
+        books.add(bookToMove);
+
+        // Write updated book list
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+            oos.writeObject(books);
+        }
+
+        // Write updated wishlist
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileWishlist))) {
+            oos.writeObject(wishlist);
+        }
+
+        out.println("The book on your wish list has been added to your books.");
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * Displays the wishlist and its contents.
+     *
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the wishlist is successfully displayed, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean viewWishList(String pathFileWishlist)
+            throws FileNotFoundException, IOException, ClassNotFoundException, InterruptedException {
+        clearScreen();
+        writeWishlistToConsole(pathFileWishlist);
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * Displays the menu for searching a book in the wishlist and handles user input
+     * to perform the search.
+     *
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the search is successfully performed, false otherwise.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean searchWishlistMenu(String pathFileWishlist)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        clearScreen();
+        out.print("Enter the title of the book you want to search in the wishlist: ");
+        String searchKey = scanner.nextLine();
+        return searchWishlist(pathFileWishlist, searchKey);
+    }
+
 
 }
