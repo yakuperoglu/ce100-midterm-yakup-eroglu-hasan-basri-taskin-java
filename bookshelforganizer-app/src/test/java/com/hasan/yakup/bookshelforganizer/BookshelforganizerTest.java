@@ -1470,4 +1470,71 @@ public class BookshelforganizerTest {
     assertTrue(result);
   }
 
+  @Test
+  public void TestCalculateTotalPrice_ShouldReturnFalse()
+      throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+    boolean result = library.calculateTotalPrice(testFilePathWishlist);
+    assertFalse(result);
+  }
+
+  @Test
+  public void TestIsValidMatrix_ShouldReturnFalse()
+      throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+    int[][] matrix = null;
+    boolean result = library.isValidMatrix(matrix);
+    assertFalse(result);
+  }
+
+  @Test
+  public void TestIsValidMatrix_NotEqualRowCountsToColumn_ShouldReturnFalse()
+      throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+    int[][] invalidMatrix = { { 1, 2, 3 }, { 4, 5 }, { 6, 7, 8 } };
+    boolean result = library.isValidMatrix(invalidMatrix);
+    assertFalse(result);
+  }
+
+  @Test
+  public void testMatrixMultiplication_IncompatibleMatrices() {
+    int[][] A = { { 1, 2, 4, 6, 7, 8 }, { 3, 4 } };
+    int[][] B = { { 5, 6, 7 }, { 8, 9, 10 } };
+
+    int[][] expectedEmptyResult = new int[0][0];
+    int[][] result = library.matrixMultiply(A, B);
+    assertArrayEquals(expectedEmptyResult, result);
+  }
+
+  @Test
+  public void testMatrixChainOrder_NotEqualIAndJ() {
+
+    int res = library.matrixChainOrder(new int[] { 1, 2, 3, 4, 5 }, 1, 1);
+    assertEquals(0, res);
+  }
+
+  @Test
+  public void testMatrixChainOrder_JHigherThanI() {
+
+    int res = library.matrixChainOrder(new int[] { 1, 2, 3, 4, 5 }, 1, 3);
+    assertEquals(18, res);
+  }
+
+  @Test
+  public void testCalculateTotalCost_ValidData() throws FileNotFoundException, IOException, ClassNotFoundException {
+    // create test data wishlist
+    List<Book> testBooks = new ArrayList<>();
+    testBooks.add(
+        new Book(1, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123"), 125));
+    testBooks.add(
+        new Book(2, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123"), 125));
+    testBooks.add(
+        new Book(3, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123"), 125));
+
+    // Write the wishlist file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathWishlist))) {
+      oos.writeObject(testBooks);
+    }
+
+    boolean res = library.calculateTotalCost(testFilePathWishlist);
+    assertTrue(res);
+  }
+
 }
