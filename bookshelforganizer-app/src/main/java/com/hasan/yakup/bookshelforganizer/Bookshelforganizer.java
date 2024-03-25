@@ -2269,6 +2269,64 @@ public class Bookshelforganizer {
         enterToContinue();
         return commonBooks;
     }
+     /**
+     * Finds books in the library that are similar to those in the user's
+     * collection.
+     *
+     * @param pathFileBooks The file path of the library book data.
+     * @return A list of books in the library that are similar to those in the
+     *         user's collection.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public List<Book> findCommonBooks(String pathFileBooks) throws ClassNotFoundException, IOException {
+
+      // Load books that the logged-in user can borrow
+      List<Book> books = loadBooksExcludingUser(pathFileBooks);
+
+      // Load books from the user's collection
+      List<Book> userBooks = loadOwnedBooks(pathFileBooks);
+
+      List<Book> commonBooks = new ArrayList<>();
+      // Loop through each book to find matches
+      for (Book book : books) {
+          for (Book userBook : userBooks) {
+              // If the similarity score is above 70%, add to common books
+              if (findLCS(book.getTitle(), userBook.getTitle()) > 0.7) {
+                  commonBooks.add(book);
+                  break;
+              }
+          }
+      }
+      return commonBooks;
+  }
+
+  /**
+   * Finds the Longest Common Subsequence (LCS) between two strings.
+   *
+   * @param str1 The first string.
+   * @param str2 The second string.
+   * @return The ratio of the LCS length to the length of the shorter string.
+   */
+  public double findLCS(String str1, String str2) {
+      // Setup a table to calculate longest common subsequence
+      int[][] dp = new int[str1.length() + 1][str2.length() + 1];
+      for (int i = 0; i < str1.length(); i++) {
+          for (int j = 0; j < str2.length(); j++) {
+              if (str1.charAt(i) == str2.charAt(j)) {
+                  // If characters match, increase count
+                  dp[i + 1][j + 1] = dp[i][j] + 1;
+              } else {
+                  // Otherwise, take the maximum from left or top cell
+                  dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+              }
+          }
+      }
+      // Return the ratio of the LCS to the length of the shorter string
+      return (double) dp[str1.length()][str2.length()] / Math.min(str1.length(), str2.length());
+  }
+
 
 
 }
