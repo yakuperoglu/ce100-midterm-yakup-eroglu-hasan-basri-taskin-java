@@ -566,5 +566,171 @@ public class Bookshelforganizer {
         }
         return true;
     }
+    
+    /**
+     * @brief Displays the main menu.
+     * @return Always returns true to indicate successful execution.
+     */
+    public boolean printMainMenu() {
+      out.println("Welcome To Virtual Bookshelf Organizer\n\n");
+      out.println("1. Login");
+      out.println("2. Register");
+      out.println("3. Exit Program");
+      out.print("Please enter a number to select: ");
+      return true;
+  }
+
+  /**
+   * @brief Displays the main menu and manages user input.
+   * @param pathFileUsers            The file path for user data.
+   * @param pathFileBooks            The file path for book data.
+   * @param pathFileLendingHistories The file path for lending histories.
+   * @param pathFileWishlist         The file path for wishlisted books.
+   * @return 0 if the user chooses to exit the program.
+   * @throws InterruptedException   If the thread is interrupted while waiting.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public int mainMenu(String pathFileUsers, String pathFileBooks, String pathFileLendingHistories,
+          String pathFileWishlist)
+          throws InterruptedException, IOException, ClassNotFoundException {
+      int choice;
+
+      while (true) {
+          clearScreen();
+          printMainMenu();
+          choice = tryParseInt(scanner.nextLine());
+
+          if (choice == -1) {
+              handleInputError();
+              enterToContinue();
+              continue;
+          }
+
+          switch (choice) {
+              case 1:
+                  clearScreen();
+                  if (loginUserMenu(pathFileUsers))
+                      userOperations(pathFileBooks, pathFileLendingHistories, pathFileWishlist);
+                  break;
+
+              case 2:
+                  clearScreen();
+                  registerMenu(pathFileUsers);
+                  break;
+
+              case 3:
+                  out.println("Exit Program");
+                  return 0;
+
+              default:
+                  clearScreen();
+                  out.println("Invalid choice. Please try again.");
+                  enterToContinue();
+                  break;
+          }
+      }
+  }
+
+  /**
+   * @brief Displays the register menu and registers a new user.
+   * @param pathFileUsers The file path for user data.
+   * @return true if the user is successfully registered, false otherwise.
+   * @throws InterruptedException   If the thread is interrupted while waiting.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean registerMenu(String pathFileUsers) throws InterruptedException, IOException, ClassNotFoundException {
+      clearScreen();
+      User newUser = new User();
+
+      out.print("Enter Name: ");
+      newUser.setName(scanner.nextLine());
+
+      out.print("Enter Surname: ");
+      newUser.setSurname(scanner.nextLine());
+
+      out.print("Enter email: ");
+      newUser.setEmail(scanner.nextLine());
+
+      out.print("Enter password: ");
+      newUser.setPassword(scanner.nextLine());
+
+      return registerUser(newUser, pathFileUsers);
+  }
+
+  /**
+   * @brief Registers a new user.
+   * @param user         The user object to register.
+   * @param pathFileUser The file path for user data.
+   * @return true if the user is successfully registered, false otherwise.
+   * @throws FileNotFoundException  If the file cannot be found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean registerUser(User user, String pathFileUser)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+      if (user.getName().isEmpty() || user.getSurname().isEmpty() || user.getEmail().isEmpty()
+              || user.getPassword().isEmpty()) {
+          out.println("Please fill all the fields..");
+          enterToContinue();
+          return false;
+      }
+      File file = new File(pathFileUser);
+      ArrayList<User> users = new ArrayList<>();
+
+      // If file exist, first read all users and write "users"
+      if (file.exists()) {
+          try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileUser))) {
+              users = (ArrayList<User>) ois.readObject();
+          }
+          // Check user already exist
+          for (User u : users) {
+              if (u.getEmail().equals(user.getEmail())) {
+                  out.println("User already exist..");
+                  enterToContinue();
+                  return false;
+              }
+          }
+      }
+      user.setId(getNewUserId(pathFileUser));
+      // Add new user to user list
+      users.add(user);
+
+      // Write updated user list to array
+      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+          oos.writeObject(users);
+          out.println("User were registered: Welcome " + user.getName() + " " + user.getSurname());
+      }
+      enterToContinue();
+      return true;
+  }
+
+  /**
+   * @brief Displays the login menu and logs in the user.
+   * @param pathFileUsers The file path for user data.
+   * @return true if the user is successfully logged in, false otherwise.
+   * @throws InterruptedException   If the thread is interrupted while waiting.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public boolean loginUserMenu(String pathFileUsers)
+          throws InterruptedException, IOException, ClassNotFoundException {
+      clearScreen();
+      User loginUser = new User();
+
+      out.print("Enter email: ");
+      loginUser.setEmail(scanner.nextLine());
+
+      out.print("Enter password: ");
+      loginUser.setPassword(scanner.nextLine());
+
+      return loginUser(loginUser, pathFileUsers);
+  }
+
 
 }
