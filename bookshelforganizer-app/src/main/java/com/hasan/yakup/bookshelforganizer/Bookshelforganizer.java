@@ -87,148 +87,148 @@ public class Bookshelforganizer {
             return -1;
         }
     }
-    
+
     /**
      * @brief Waits for user input to continue the program.
      * @details Displays a message prompting the user to press any key to continue.
      */
     public boolean enterToContinue() {
-      out.println("Press enter to continue...");
-      if (!isTestMode) {
-          scanner.nextLine();
-      }
-      return true;
-  }
+        out.println("Press enter to continue...");
+        if (!isTestMode) {
+            scanner.nextLine();
+        }
+        return true;
+    }
 
-  /**
-   * @brief Loads the prices of books owned by the logged-in user.
-   * @param pathFileBooks The file path to the book data.
-   * @return A 2D array containing the prices of owned books.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   * @throws IOException            If an I/O error occurs.
-   */
-  public int[][] loadOwnedBookPrices(String pathFileBooks)
-          throws FileNotFoundException, ClassNotFoundException, IOException {
-      List<Book> ownedBooks = loadOwnedBooks(pathFileBooks);
-      int numBooks = ownedBooks.size();
+    /**
+     * @brief Loads the prices of books owned by the logged-in user.
+     * @param pathFileBooks The file path to the book data.
+     * @return A 2D array containing the prices of owned books.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public int[][] loadOwnedBookPrices(String pathFileBooks)
+            throws FileNotFoundException, ClassNotFoundException, IOException {
+        List<Book> ownedBooks = loadOwnedBooks(pathFileBooks);
+        int numBooks = ownedBooks.size();
 
-      int[][] bookPrices = new int[1][numBooks]; // Assuming only one row for book prices
+        int[][] bookPrices = new int[1][numBooks]; // Assuming only one row for book prices
 
-      // Populate book prices randomly
-      for (int i = 0; i < numBooks; i++) {
-          bookPrices[0][i] = ownedBooks.get(i).getPrice(); // Random price between 10 and 59
-      }
+        // Populate book prices randomly
+        for (int i = 0; i < numBooks; i++) {
+            bookPrices[0][i] = ownedBooks.get(i).getPrice(); // Random price between 10 and 59
+        }
 
-      return bookPrices;
-  }
+        return bookPrices;
+    }
 
-  /**
-   * @brief Loads the books owned by the logged-in user.
-   * @param pathFileBooks The file path to the book data.
-   * @return A list of books owned by the logged-in user.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public List<Book> loadOwnedBooks(String pathFileBooks)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
+    /**
+     * @brief Loads the books owned by the logged-in user.
+     * @param pathFileBooks The file path to the book data.
+     * @return A list of books owned by the logged-in user.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public List<Book> loadOwnedBooks(String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
 
-      return loadBooks(pathFileBooks, loggedUser.getId());
-  }
+        return loadBooks(pathFileBooks, loggedUser.getId());
+    }
 
-  /**
-   * @brief Loads the books wishlisted by the logged-in user.
-   * @param pathFileWishlist The file path to the wishlist data.
-   * @return A list of books wishlisted by the logged-in user.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public List<Book> loadWishlistedBooks(String pathFileWishlist)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
+    /**
+     * @brief Loads the books wishlisted by the logged-in user.
+     * @param pathFileWishlist The file path to the wishlist data.
+     * @return A list of books wishlisted by the logged-in user.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public List<Book> loadWishlistedBooks(String pathFileWishlist)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
 
-      return loadWishlist(pathFileWishlist, loggedUser.getId());
-  }
+        return loadWishlist(pathFileWishlist, loggedUser.getId());
+    }
 
-  /**
-   * @brief Loads the books excluding those owned by the logged-in user.
-   * @param pathFileBooks The file path to the book data.
-   * @return A list of books excluding those owned by the logged-in user.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public List<Book> loadBooksExcludingUser(String pathFileBooks)
-          throws IOException, ClassNotFoundException {
-      List<Book> allBooks = loadBooks(pathFileBooks);
-      List<Book> filteredBooks = new ArrayList<>();
+    /**
+     * @brief Loads the books excluding those owned by the logged-in user.
+     * @param pathFileBooks The file path to the book data.
+     * @return A list of books excluding those owned by the logged-in user.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public List<Book> loadBooksExcludingUser(String pathFileBooks)
+            throws IOException, ClassNotFoundException {
+        List<Book> allBooks = loadBooks(pathFileBooks);
+        List<Book> filteredBooks = new ArrayList<>();
 
-      for (Book book : allBooks) {
-          if (!book.getOwner().getId().equals(loggedUser.getId())) {
-              filteredBooks.add(book);
-          }
-      }
+        for (Book book : allBooks) {
+            if (!book.getOwner().getId().equals(loggedUser.getId())) {
+                filteredBooks.add(book);
+            }
+        }
 
-      return filteredBooks;
-  }
+        return filteredBooks;
+    }
 
-  /**
-   * @brief Loads the books owned by a specific user.
-   * @param pathFileBooks The file path to the book data.
-   * @param userId        The ID of the user whose books are to be loaded.
-   * @return A list of books owned by the specified user.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public List<Book> loadBooks(String pathFileBooks, Integer userId)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
-      List<Book> filteredBooks = new ArrayList<>();
+    /**
+     * @brief Loads the books owned by a specific user.
+     * @param pathFileBooks The file path to the book data.
+     * @param userId        The ID of the user whose books are to be loaded.
+     * @return A list of books owned by the specified user.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public List<Book> loadBooks(String pathFileBooks, Integer userId)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> filteredBooks = new ArrayList<>();
 
-      File file = new File(pathFileBooks);
+        File file = new File(pathFileBooks);
 
-      if (file.exists()) {
-          try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileBooks))) {
-              List<Book> allBooks = (List<Book>) ois.readObject();
-              for (Book book : allBooks) {
-                  if (book.getOwner().getId().equals(userId)) {
-                      filteredBooks.add(book);
-                  }
-              }
-          }
-      }
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileBooks))) {
+                List<Book> allBooks = (List<Book>) ois.readObject();
+                for (Book book : allBooks) {
+                    if (book.getOwner().getId().equals(userId)) {
+                        filteredBooks.add(book);
+                    }
+                }
+            }
+        }
 
-      return filteredBooks;
-  }
+        return filteredBooks;
+    }
 
-  /**
-   * @brief Loads the books from the specified file.
-   * @param pathFileBooks The file path to the book data.
-   * @return A list of books loaded from the file, or an empty list if the file
-   *         does not exist.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public List<Book> loadBooks(String pathFileBooks)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
+    /**
+     * @brief Loads the books from the specified file.
+     * @param pathFileBooks The file path to the book data.
+     * @return A list of books loaded from the file, or an empty list if the file
+     *         does not exist.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public List<Book> loadBooks(String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
 
-      File file = new File(pathFileBooks);
+        File file = new File(pathFileBooks);
 
-      if (file.exists()) {
-          try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileBooks))) {
-              return (List<Book>) ois.readObject();
-          }
-      }
-      return new ArrayList<>();
-  }
-  
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileBooks))) {
+                return (List<Book>) ois.readObject();
+            }
+        }
+        return new ArrayList<>();
+    }
+
     /**
      * @brief Loads the wishlist of books for the specified user.
      * @param pathFileWishlist The file path to the wishlist data.
@@ -418,7 +418,7 @@ public class Bookshelforganizer {
 
         return books.get(books.size() - 1).getId() + 1;
     }
-    
+
     /**
      * @brief Gets the ID for a new wishlist.
      * @param pathFileWishlist The file path to the wishlist data.
@@ -566,172 +566,172 @@ public class Bookshelforganizer {
         }
         return true;
     }
-    
+
     /**
      * @brief Displays the main menu.
      * @return Always returns true to indicate successful execution.
      */
     public boolean printMainMenu() {
-      out.println("Welcome To Virtual Bookshelf Organizer\n\n");
-      out.println("1. Login");
-      out.println("2. Register");
-      out.println("3. Exit Program");
-      out.print("Please enter a number to select: ");
-      return true;
-  }
+        out.println("Welcome To Virtual Bookshelf Organizer\n\n");
+        out.println("1. Login");
+        out.println("2. Register");
+        out.println("3. Exit Program");
+        out.print("Please enter a number to select: ");
+        return true;
+    }
 
-  /**
-   * @brief Displays the main menu and manages user input.
-   * @param pathFileUsers            The file path for user data.
-   * @param pathFileBooks            The file path for book data.
-   * @param pathFileLendingHistories The file path for lending histories.
-   * @param pathFileWishlist         The file path for wishlisted books.
-   * @return 0 if the user chooses to exit the program.
-   * @throws InterruptedException   If the thread is interrupted while waiting.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public int mainMenu(String pathFileUsers, String pathFileBooks, String pathFileLendingHistories,
-          String pathFileWishlist)
-          throws InterruptedException, IOException, ClassNotFoundException {
-      int choice;
+    /**
+     * @brief Displays the main menu and manages user input.
+     * @param pathFileUsers            The file path for user data.
+     * @param pathFileBooks            The file path for book data.
+     * @param pathFileLendingHistories The file path for lending histories.
+     * @param pathFileWishlist         The file path for wishlisted books.
+     * @return 0 if the user chooses to exit the program.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public int mainMenu(String pathFileUsers, String pathFileBooks, String pathFileLendingHistories,
+            String pathFileWishlist)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        int choice;
 
-      while (true) {
-          clearScreen();
-          printMainMenu();
-          choice = tryParseInt(scanner.nextLine());
+        while (true) {
+            clearScreen();
+            printMainMenu();
+            choice = tryParseInt(scanner.nextLine());
 
-          if (choice == -1) {
-              handleInputError();
-              enterToContinue();
-              continue;
-          }
+            if (choice == -1) {
+                handleInputError();
+                enterToContinue();
+                continue;
+            }
 
-          switch (choice) {
-              case 1:
-                  clearScreen();
-                  if (loginUserMenu(pathFileUsers))
-                      userOperations(pathFileBooks, pathFileLendingHistories, pathFileWishlist);
-                  break;
+            switch (choice) {
+                case 1:
+                    clearScreen();
+                    if (loginUserMenu(pathFileUsers))
+                        userOperations(pathFileBooks, pathFileLendingHistories, pathFileWishlist);
+                    break;
 
-              case 2:
-                  clearScreen();
-                  registerMenu(pathFileUsers);
-                  break;
+                case 2:
+                    clearScreen();
+                    registerMenu(pathFileUsers);
+                    break;
 
-              case 3:
-                  out.println("Exit Program");
-                  return 0;
+                case 3:
+                    out.println("Exit Program");
+                    return 0;
 
-              default:
-                  clearScreen();
-                  out.println("Invalid choice. Please try again.");
-                  enterToContinue();
-                  break;
-          }
-      }
-  }
+                default:
+                    clearScreen();
+                    out.println("Invalid choice. Please try again.");
+                    enterToContinue();
+                    break;
+            }
+        }
+    }
 
-  /**
-   * @brief Displays the register menu and registers a new user.
-   * @param pathFileUsers The file path for user data.
-   * @return true if the user is successfully registered, false otherwise.
-   * @throws InterruptedException   If the thread is interrupted while waiting.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean registerMenu(String pathFileUsers) throws InterruptedException, IOException, ClassNotFoundException {
-      clearScreen();
-      User newUser = new User();
+    /**
+     * @brief Displays the register menu and registers a new user.
+     * @param pathFileUsers The file path for user data.
+     * @return true if the user is successfully registered, false otherwise.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean registerMenu(String pathFileUsers) throws InterruptedException, IOException, ClassNotFoundException {
+        clearScreen();
+        User newUser = new User();
 
-      out.print("Enter Name: ");
-      newUser.setName(scanner.nextLine());
+        out.print("Enter Name: ");
+        newUser.setName(scanner.nextLine());
 
-      out.print("Enter Surname: ");
-      newUser.setSurname(scanner.nextLine());
+        out.print("Enter Surname: ");
+        newUser.setSurname(scanner.nextLine());
 
-      out.print("Enter email: ");
-      newUser.setEmail(scanner.nextLine());
+        out.print("Enter email: ");
+        newUser.setEmail(scanner.nextLine());
 
-      out.print("Enter password: ");
-      newUser.setPassword(scanner.nextLine());
+        out.print("Enter password: ");
+        newUser.setPassword(scanner.nextLine());
 
-      return registerUser(newUser, pathFileUsers);
-  }
+        return registerUser(newUser, pathFileUsers);
+    }
 
-  /**
-   * @brief Registers a new user.
-   * @param user         The user object to register.
-   * @param pathFileUser The file path for user data.
-   * @return true if the user is successfully registered, false otherwise.
-   * @throws FileNotFoundException  If the file cannot be found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean registerUser(User user, String pathFileUser)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
-      if (user.getName().isEmpty() || user.getSurname().isEmpty() || user.getEmail().isEmpty()
-              || user.getPassword().isEmpty()) {
-          out.println("Please fill all the fields..");
-          enterToContinue();
-          return false;
-      }
-      File file = new File(pathFileUser);
-      ArrayList<User> users = new ArrayList<>();
+    /**
+     * @brief Registers a new user.
+     * @param user         The user object to register.
+     * @param pathFileUser The file path for user data.
+     * @return true if the user is successfully registered, false otherwise.
+     * @throws FileNotFoundException  If the file cannot be found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean registerUser(User user, String pathFileUser)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        if (user.getName().isEmpty() || user.getSurname().isEmpty() || user.getEmail().isEmpty()
+                || user.getPassword().isEmpty()) {
+            out.println("Please fill all the fields..");
+            enterToContinue();
+            return false;
+        }
+        File file = new File(pathFileUser);
+        ArrayList<User> users = new ArrayList<>();
 
-      // If file exist, first read all users and write "users"
-      if (file.exists()) {
-          try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileUser))) {
-              users = (ArrayList<User>) ois.readObject();
-          }
-          // Check user already exist
-          for (User u : users) {
-              if (u.getEmail().equals(user.getEmail())) {
-                  out.println("User already exist..");
-                  enterToContinue();
-                  return false;
-              }
-          }
-      }
-      user.setId(getNewUserId(pathFileUser));
-      // Add new user to user list
-      users.add(user);
+        // If file exist, first read all users and write "users"
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileUser))) {
+                users = (ArrayList<User>) ois.readObject();
+            }
+            // Check user already exist
+            for (User u : users) {
+                if (u.getEmail().equals(user.getEmail())) {
+                    out.println("User already exist..");
+                    enterToContinue();
+                    return false;
+                }
+            }
+        }
+        user.setId(getNewUserId(pathFileUser));
+        // Add new user to user list
+        users.add(user);
 
-      // Write updated user list to array
-      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-          oos.writeObject(users);
-          out.println("User were registered: Welcome " + user.getName() + " " + user.getSurname());
-      }
-      enterToContinue();
-      return true;
-  }
+        // Write updated user list to array
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+            oos.writeObject(users);
+            out.println("User were registered: Welcome " + user.getName() + " " + user.getSurname());
+        }
+        enterToContinue();
+        return true;
+    }
 
-  /**
-   * @brief Displays the login menu and logs in the user.
-   * @param pathFileUsers The file path for user data.
-   * @return true if the user is successfully logged in, false otherwise.
-   * @throws InterruptedException   If the thread is interrupted while waiting.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean loginUserMenu(String pathFileUsers)
-          throws InterruptedException, IOException, ClassNotFoundException {
-      clearScreen();
-      User loginUser = new User();
+    /**
+     * @brief Displays the login menu and logs in the user.
+     * @param pathFileUsers The file path for user data.
+     * @return true if the user is successfully logged in, false otherwise.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean loginUserMenu(String pathFileUsers)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        clearScreen();
+        User loginUser = new User();
 
-      out.print("Enter email: ");
-      loginUser.setEmail(scanner.nextLine());
+        out.print("Enter email: ");
+        loginUser.setEmail(scanner.nextLine());
 
-      out.print("Enter password: ");
-      loginUser.setPassword(scanner.nextLine());
+        out.print("Enter password: ");
+        loginUser.setPassword(scanner.nextLine());
 
-      return loginUser(loginUser, pathFileUsers);
-  }
-  
+        return loginUser(loginUser, pathFileUsers);
+    }
+
     /**
      * @brief Logs in the user.
      * @param data          The user data for login.
@@ -921,7 +921,7 @@ public class Bookshelforganizer {
             }
         }
     }
-    
+
     /**
      * @brief Calculates the minimum cost of arranging books.
      * @param pathToBooksFile The file path for book data.
@@ -1092,7 +1092,7 @@ public class Bookshelforganizer {
         }
         return result;
     }
-    
+
     /**
      * Displays the menu for adding a new book, prompts the user for book details,
      * and adds the book to the library system.
@@ -1105,230 +1105,230 @@ public class Bookshelforganizer {
      *                                found.
      */
     public boolean addBookMenu(String pathFileBooks) throws InterruptedException, IOException, ClassNotFoundException {
-      clearScreen();
-      Book newBook = new Book();
+        clearScreen();
+        Book newBook = new Book();
 
-      out.print("Enter book name: ");
-      newBook.setTitle(scanner.nextLine());
+        out.print("Enter book name: ");
+        newBook.setTitle(scanner.nextLine());
 
-      out.print("Enter author: ");
-      newBook.setAuthor(scanner.nextLine());
+        out.print("Enter author: ");
+        newBook.setAuthor(scanner.nextLine());
 
-      out.print("Enter Genre: ");
-      newBook.setGenre(scanner.nextLine());
+        out.print("Enter Genre: ");
+        newBook.setGenre(scanner.nextLine());
 
-      out.print("Enter Cost: ");
-      int cost = tryParseInt(scanner.nextLine());
-      if (cost == -1) {
-          handleInputError();
-          enterToContinue();
-          return false;
-      }
-      newBook.setPrice(cost);
+        out.print("Enter Cost: ");
+        int cost = tryParseInt(scanner.nextLine());
+        if (cost == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
+        newBook.setPrice(cost);
 
-      boolean result = addBook(newBook, pathFileBooks);
-      if (result)
-          out.println("Book added successfully.");
-      enterToContinue();
-      return result;
-  }
+        boolean result = addBook(newBook, pathFileBooks);
+        if (result)
+            out.println("Book added successfully.");
+        enterToContinue();
+        return result;
+    }
 
-  /**
-   * Adds a new book to the library system.
-   * 
-   * @param newBook       The book to be added.
-   * @param pathFileBooks The file path of the book data.
-   * @return True if the book was added successfully, false otherwise.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean addBook(Book newBook, String pathFileBooks)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
-      List<Book> books = loadBooks(pathFileBooks);
+    /**
+     * Adds a new book to the library system.
+     * 
+     * @param newBook       The book to be added.
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book was added successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean addBook(Book newBook, String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> books = loadBooks(pathFileBooks);
 
-      newBook.setId(getNewBookId(pathFileBooks));
-      newBook.setOwner(loggedUser);
-      newBook.setIsBorrowed(false);
+        newBook.setId(getNewBookId(pathFileBooks));
+        newBook.setOwner(loggedUser);
+        newBook.setIsBorrowed(false);
 
-      books.add(newBook);
+        books.add(newBook);
 
-      try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
-          oos.writeObject(books);
-      }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+            oos.writeObject(books);
+        }
 
-      return true;
-  }
+        return true;
+    }
 
-  /**
-   * Displays the menu for deleting a book, prompts the user to select a book
-   * for deletion, and deletes the selected book from the library system.
-   * 
-   * @param pathFileBooks The file path of the book data.
-   * @return True if the book was deleted successfully, false otherwise.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   * @throws InterruptedException   If the operation is interrupted.
-   */
-  public boolean deleteBookMenu(String pathFileBooks)
-          throws FileNotFoundException, IOException, ClassNotFoundException, InterruptedException {
-      clearScreen();
-      boolean isUserHasBooks = writeBooksToConsole(pathFileBooks);
-      if (!isUserHasBooks) {
-          enterToContinue();
-          return false;
-      }
-      out.print("Enter a number to delete book: ");
+    /**
+     * Displays the menu for deleting a book, prompts the user to select a book
+     * for deletion, and deletes the selected book from the library system.
+     * 
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book was deleted successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean deleteBookMenu(String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException, InterruptedException {
+        clearScreen();
+        boolean isUserHasBooks = writeBooksToConsole(pathFileBooks);
+        if (!isUserHasBooks) {
+            enterToContinue();
+            return false;
+        }
+        out.print("Enter a number to delete book: ");
 
-      int bookId = tryParseInt(scanner.nextLine());
+        int bookId = tryParseInt(scanner.nextLine());
 
-      if (bookId == -1) {
-          handleInputError();
-          enterToContinue();
-          return false;
-      }
+        if (bookId == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
 
-      return deleteBook(bookId, pathFileBooks);
-  }
+        return deleteBook(bookId, pathFileBooks);
+    }
 
-  /**
-   * Deletes a book from the library system based on the provided book ID.
-   * 
-   * @param bookId        The ID of the book to be deleted.
-   * @param pathFileBooks The file path of the book data.
-   * @return True if the book was deleted successfully, false otherwise.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean deleteBook(int bookId, String pathFileBooks)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
-      List<Book> books = loadBooks(pathFileBooks);
-      boolean isFound = false;
+    /**
+     * Deletes a book from the library system based on the provided book ID.
+     * 
+     * @param bookId        The ID of the book to be deleted.
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book was deleted successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean deleteBook(int bookId, String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> books = loadBooks(pathFileBooks);
+        boolean isFound = false;
 
-      for (Book book : books) {
-          if (book.getId() == bookId) {
-              isFound = true;
-              books.remove(book);
-              break;
-          }
-      }
+        for (Book book : books) {
+            if (book.getId() == bookId) {
+                isFound = true;
+                books.remove(book);
+                break;
+            }
+        }
 
-      if (isFound) {
-          try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
-              oos.writeObject(books);
-          }
-          out.println("Book with ID '" + bookId + "' has been deleted successfully.");
-          enterToContinue();
-          return true;
-      }
+        if (isFound) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+                oos.writeObject(books);
+            }
+            out.println("Book with ID '" + bookId + "' has been deleted successfully.");
+            enterToContinue();
+            return true;
+        }
 
-      out.println("There is no book with ID '" + bookId + "'.");
-      enterToContinue();
-      return false;
-  }
+        out.println("There is no book with ID '" + bookId + "'.");
+        enterToContinue();
+        return false;
+    }
 
-  /**
-   * Displays the menu for updating a book, prompts the user to select a book
-   * for updating, and allows the user to modify the book's details.
-   * 
-   * @param pathFileBooks The file path of the book data.
-   * @return True if the book was updated successfully, false otherwise.
-   * @throws IOException            If an I/O error occurs.
-   * @throws InterruptedException   If the operation is interrupted.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean updateBookMenu(String pathFileBooks)
-          throws IOException, InterruptedException, ClassNotFoundException {
-      clearScreen();
-      boolean isUserHasBooks = writeBooksToConsole(pathFileBooks);
-      if (!isUserHasBooks) {
-          enterToContinue();
-          return false;
-      }
-      out.print("Enter a number to update book: ");
+    /**
+     * Displays the menu for updating a book, prompts the user to select a book
+     * for updating, and allows the user to modify the book's details.
+     * 
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book was updated successfully, false otherwise.
+     * @throws IOException            If an I/O error occurs.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean updateBookMenu(String pathFileBooks)
+            throws IOException, InterruptedException, ClassNotFoundException {
+        clearScreen();
+        boolean isUserHasBooks = writeBooksToConsole(pathFileBooks);
+        if (!isUserHasBooks) {
+            enterToContinue();
+            return false;
+        }
+        out.print("Enter a number to update book: ");
 
-      int bookId = tryParseInt(scanner.nextLine());
+        int bookId = tryParseInt(scanner.nextLine());
 
-      if (bookId == -1) {
-          handleInputError();
-          enterToContinue();
-          return false;
-      }
+        if (bookId == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
 
-      Book newBook = new Book();
+        Book newBook = new Book();
 
-      newBook.setId(bookId);
+        newBook.setId(bookId);
 
-      out.print("Enter the new name for the book: ");
-      newBook.setTitle(scanner.nextLine());
+        out.print("Enter the new name for the book: ");
+        newBook.setTitle(scanner.nextLine());
 
-      out.print("Enter author name: ");
-      newBook.setAuthor(scanner.nextLine());
+        out.print("Enter author name: ");
+        newBook.setAuthor(scanner.nextLine());
 
-      out.print("Enter genre: ");
-      newBook.setGenre(scanner.nextLine());
+        out.print("Enter genre: ");
+        newBook.setGenre(scanner.nextLine());
 
-      out.print("Enter Cost: ");
-      int cost = tryParseInt(scanner.nextLine());
-      if (cost == -1) {
-          handleInputError();
-          enterToContinue();
-          return false;
-      }
-      newBook.setPrice(cost);
+        out.print("Enter Cost: ");
+        int cost = tryParseInt(scanner.nextLine());
+        if (cost == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
+        newBook.setPrice(cost);
 
-      updateBook(newBook, pathFileBooks);
-      return true;
-  }
+        updateBook(newBook, pathFileBooks);
+        return true;
+    }
 
-  /**
-   * Updates the details of a book in the library system.
-   * 
-   * @param newBook       The updated book object.
-   * @param pathFileBooks The file path of the book data.
-   * @return True if the book was updated successfully, false otherwise.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   */
-  public boolean updateBook(Book newBook, String pathFileBooks)
-          throws FileNotFoundException, IOException, ClassNotFoundException {
-      List<Book> books = loadBooks(pathFileBooks);
-      boolean isFound = false;
+    /**
+     * Updates the details of a book in the library system.
+     * 
+     * @param newBook       The updated book object.
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book was updated successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean updateBook(Book newBook, String pathFileBooks)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> books = loadBooks(pathFileBooks);
+        boolean isFound = false;
 
-      for (Book book : books) {
-          if (book.getId() == newBook.getId()) {
-              book.setTitle(newBook.getTitle());
-              book.setAuthor(newBook.getAuthor());
-              book.setGenre(newBook.getGenre());
-              book.setPrice(newBook.getPrice());
-              isFound = true;
-              break;
-          }
-      }
+        for (Book book : books) {
+            if (book.getId() == newBook.getId()) {
+                book.setTitle(newBook.getTitle());
+                book.setAuthor(newBook.getAuthor());
+                book.setGenre(newBook.getGenre());
+                book.setPrice(newBook.getPrice());
+                isFound = true;
+                break;
+            }
+        }
 
-      if (isFound) {
-          // Save book list to binary file
-          try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
-              oos.writeObject(books);
-          }
-          out.println("Book with ID '" + newBook.getId() + "' has been updated successfully.");
-      }
+        if (isFound) {
+            // Save book list to binary file
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileBooks))) {
+                oos.writeObject(books);
+            }
+            out.println("Book with ID '" + newBook.getId() + "' has been updated successfully.");
+        }
 
-      if (!isFound)
-          out.println("There is no book with the specified ID.");
+        if (!isFound)
+            out.println("There is no book with the specified ID.");
 
-      enterToContinue();
-      return isFound;
-  }
-  
+        enterToContinue();
+        return isFound;
+    }
+
     /**
      * Displays the catalog of books stored in the system.
      * 
@@ -1340,131 +1340,132 @@ public class Bookshelforganizer {
      *                                found.
      */
     public boolean viewCatalog(String filePathBooks) throws InterruptedException, IOException, ClassNotFoundException {
-      clearScreen();
-      writeBooksToConsole(filePathBooks);
-      enterToContinue();
-      return true;
-  }
+        clearScreen();
+        writeBooksToConsole(filePathBooks);
+        enterToContinue();
+        return true;
+    }
 
-  /**
-   * Displays the menu for selecting books based on a specified budget,
-   * prompts the user for their budget, and lists the books within the budget.
-   * 
-   * @param pathFileBooks The file path of the book data.
-   * @return True if the book selection was successful, false otherwise.
-   * @throws FileNotFoundException  If the specified file is not found.
-   * @throws ClassNotFoundException If the class of a serialized object cannot be
-   *                                found.
-   * @throws IOException            If an I/O error occurs.
-   * @throws InterruptedException   If the operation is interrupted.
-   */
-  public boolean selectBooksByPriceMenu(String pathFileBooks)
-          throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
-      clearScreen();
-      List<Book> books = loadOwnedBooks(pathFileBooks);
+    /**
+     * Displays the menu for selecting books based on a specified budget,
+     * prompts the user for their budget, and lists the books within the budget.
+     * 
+     * @param pathFileBooks The file path of the book data.
+     * @return True if the book selection was successful, false otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean selectBooksByPriceMenu(String pathFileBooks)
+            throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+        clearScreen();
+        List<Book> books = loadOwnedBooks(pathFileBooks);
 
-      out.print("Enter your budget: ");
-      int budget = tryParseInt(scanner.nextLine());
+        out.print("Enter your budget: ");
+        int budget = tryParseInt(scanner.nextLine());
 
-      if (budget == -1) {
-          handleInputError();
-          enterToContinue();
-          return false;
-      }
-      List<Book> selectedBooks = selectBooksByPrice(books, budget);
+        if (budget == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
+        List<Book> selectedBooks = selectBooksByPrice(books, budget);
 
-      out.println("Selected books within your budget:");
-      for (Book book : selectedBooks) {
-          out.println(book.getTitle() + " by " + book.getAuthor() + " - " + book.getPrice() + "TL");
-      }
-      enterToContinue();
-      return true;
-  }
+        out.println("Selected books within your budget:");
+        for (Book book : selectedBooks) {
+            out.println(book.getTitle() + " by " + book.getAuthor() + " - " + book.getPrice() + "TL");
+        }
+        enterToContinue();
+        return true;
+    }
 
-  /**
-   * Selects books based on a specified budget using dynamic programming.
-   * 
-   * @param books  The list of available books.
-   * @param budget The budget for book selection.
-   * @return A list of selected books within the given budget.
-   */
-  public List<Book> selectBooksByPrice(List<Book> books, int budget) {
-      int totalBooks = books.size();
+    /**
+     * Selects books based on a specified budget using dynamic programming.
+     * 
+     * @param books  The list of available books.
+     * @param budget The budget for book selection.
+     * @return A list of selected books within the given budget.
+     */
+    public List<Book> selectBooksByPrice(List<Book> books, int budget) {
+        int totalBooks = books.size();
 
-      // This DP (Dynamic Programming) table stores the maximum total price
-      // considering different numbers of
-      // books and budgets.
-      // It helps in efficiently calculating the optimal selection of books within the
-      // given budget.
+        // This DP (Dynamic Programming) table stores the maximum total price
+        // considering different numbers of
+        // books and budgets.
+        // It helps in efficiently calculating the optimal selection of books within the
+        // given budget.
 
-      int[][] dpTable = new int[totalBooks + 1][budget + 1];
+        int[][] dpTable = new int[totalBooks + 1][budget + 1];
 
-      // Fill in the DP table
-      for (int bookIndex = 0; bookIndex <= totalBooks; bookIndex++) {
-          for (int currentBudget = 0; currentBudget <= budget; currentBudget++) {
-              // Base case: If there are no books or the budget is zero,
-              // the total price we can afford is zero.
-              if (bookIndex == 0 || currentBudget == 0)
-                  dpTable[bookIndex][currentBudget] = 0;
-              else {
-                  Book currentBook = books.get(bookIndex - 1);
-                  // If the current book's price is less than or equal to the current budget,
-                  // we consider including it in the selection.
-                  if (currentBook.getPrice() <= currentBudget) {
-                      // Decide whether to include the current book or not,
-                      // maximizing the total price within the budget.
-                      dpTable[bookIndex][currentBudget] = Math.max(
-                              currentBook.getPrice() + dpTable[bookIndex - 1][currentBudget - currentBook.getPrice()],
-                              dpTable[bookIndex - 1][currentBudget]);
-                  } else {
-                      // If the current book's price exceeds the current budget,
-                      // we cannot include it in the selection, so we keep the previous best price.
-                      dpTable[bookIndex][currentBudget] = dpTable[bookIndex - 1][currentBudget];
-                  }
-              }
-          }
-      }
+        // Fill in the DP table
+        for (int bookIndex = 0; bookIndex <= totalBooks; bookIndex++) {
+            for (int currentBudget = 0; currentBudget <= budget; currentBudget++) {
+                // Base case: If there are no books or the budget is zero,
+                // the total price we can afford is zero.
+                if (bookIndex == 0 || currentBudget == 0)
+                    dpTable[bookIndex][currentBudget] = 0;
+                else {
+                    Book currentBook = books.get(bookIndex - 1);
+                    // If the current book's price is less than or equal to the current budget,
+                    // we consider including it in the selection.
+                    if (currentBook.getPrice() <= currentBudget) {
+                        // Decide whether to include the current book or not,
+                        // maximizing the total price within the budget.
+                        dpTable[bookIndex][currentBudget] = Math.max(
+                                currentBook.getPrice() + dpTable[bookIndex - 1][currentBudget - currentBook.getPrice()],
+                                dpTable[bookIndex - 1][currentBudget]);
+                    } else {
+                        // If the current book's price exceeds the current budget,
+                        // we cannot include it in the selection, so we keep the previous best price.
+                        dpTable[bookIndex][currentBudget] = dpTable[bookIndex - 1][currentBudget];
+                    }
+                }
+            }
+        }
 
-      // Trace back to find the selected books
-      List<Book> selectedBooks = new ArrayList<>();
-      int remainingBudget = budget;
-      int totalPrice = dpTable[totalBooks][budget];
+        // Trace back to find the selected books
+        List<Book> selectedBooks = new ArrayList<>();
+        int remainingBudget = budget;
+        int totalPrice = dpTable[totalBooks][budget];
 
-      for (int bookIndex = totalBooks; bookIndex > 0 && totalPrice > 0; bookIndex--) {
-          if (totalPrice != dpTable[bookIndex - 1][remainingBudget]) {
-              // If the current book was selected, add it to the list of selected books.
-              selectedBooks.add(books.get(bookIndex - 1));
-              // Update the remaining budget and total price
-              totalPrice -= books.get(bookIndex - 1).getPrice();
-              remainingBudget -= books.get(bookIndex - 1).getPrice();
-          }
-      }
+        for (int bookIndex = totalBooks; bookIndex > 0 && totalPrice > 0; bookIndex--) {
+            if (totalPrice != dpTable[bookIndex - 1][remainingBudget]) {
+                // If the current book was selected, add it to the list of selected books.
+                selectedBooks.add(books.get(bookIndex - 1));
+                // Update the remaining budget and total price
+                totalPrice -= books.get(bookIndex - 1).getPrice();
+                remainingBudget -= books.get(bookIndex - 1).getPrice();
+            }
+        }
 
-      return selectedBooks;
-  }
+        return selectedBooks;
+    }
 
-  /**
-   * Displays the menu for loan management and prompts the user to select
-   * an action related to loaning or borrowing books.
-   * 
-   * @return True if the loan management menu is displayed successfully, false
-   *         otherwise.
-   * @throws InterruptedException If the operation is interrupted.
-   * @throws IOException          If an I/O error occurs.
-   */
-  public boolean loanManagementMenu() throws InterruptedException, IOException {
-      clearScreen();
-      out.println("Loan Management Menu\n\n");
-      out.println("1. Give Book");
-      out.println("2. Borrow Book");
-      out.println("3. Show borrowed books");
-      out.println("4. Show given books");
-      out.println("5. Show suggestions for books to borrow");
-      out.println("6. Return to User Operations Menu");
-      out.print("Please enter a number to select: ");
-      return true;
-  }
-  /**
+    /**
+     * Displays the menu for loan management and prompts the user to select
+     * an action related to loaning or borrowing books.
+     * 
+     * @return True if the loan management menu is displayed successfully, false
+     *         otherwise.
+     * @throws InterruptedException If the operation is interrupted.
+     * @throws IOException          If an I/O error occurs.
+     */
+    public boolean loanManagementMenu() throws InterruptedException, IOException {
+        clearScreen();
+        out.println("Loan Management Menu\n\n");
+        out.println("1. Give Book");
+        out.println("2. Borrow Book");
+        out.println("3. Show borrowed books");
+        out.println("4. Show given books");
+        out.println("5. Show suggestions for books to borrow");
+        out.println("6. Return to User Operations Menu");
+        out.print("Please enter a number to select: ");
+        return true;
+    }
+
+    /**
      * Manages the loaning and borrowing of books by providing a menu
      * and handling user input to perform corresponding actions.
      * 
@@ -1641,6 +1642,7 @@ public class Bookshelforganizer {
 
         return borrowBook(bookId, pathFileBooks, pathFileHistories);
     }
+
     /**
      * Facilitates the process of borrowing a book by updating the book's status in
      * the book data file and adding a loan history entry.
@@ -1763,7 +1765,7 @@ public class Bookshelforganizer {
         out.print("Please enter a number to select: ");
         return true;
     }
-    
+
     /**
      * Manages the wishlist operations such as adding, deleting, marking as
      * acquired, viewing, searching, and calculating the total cost.
@@ -1952,7 +1954,7 @@ public class Bookshelforganizer {
 
         return true;
     }
-    
+
     /**
      * Displays the menu for deleting a book from the wishlist and handles user
      * input to perform the operation.
@@ -2057,7 +2059,7 @@ public class Bookshelforganizer {
 
         return markAsAcquired(bookId, pathFileBooks, pathFileWishlist);
     }
-    
+
     /**
      * Marks a book in the wishlist as acquired, moving it to the user's books.
      *
@@ -2151,6 +2153,7 @@ public class Bookshelforganizer {
         String searchKey = scanner.nextLine();
         return searchWishlist(pathFileWishlist, searchKey);
     }
+
     /**
      * Searches for a book in the wishlist based on a search key.
      *
@@ -2269,7 +2272,8 @@ public class Bookshelforganizer {
         enterToContinue();
         return commonBooks;
     }
-     /**
+
+    /**
      * Finds books in the library that are similar to those in the user's
      * collection.
      *
@@ -2282,51 +2286,52 @@ public class Bookshelforganizer {
      */
     public List<Book> findCommonBooks(String pathFileBooks) throws ClassNotFoundException, IOException {
 
-      // Load books that the logged-in user can borrow
-      List<Book> books = loadBooksExcludingUser(pathFileBooks);
+        // Load books that the logged-in user can borrow
+        List<Book> books = loadBooksExcludingUser(pathFileBooks);
 
-      // Load books from the user's collection
-      List<Book> userBooks = loadOwnedBooks(pathFileBooks);
+        // Load books from the user's collection
+        List<Book> userBooks = loadOwnedBooks(pathFileBooks);
 
-      List<Book> commonBooks = new ArrayList<>();
-      // Loop through each book to find matches
-      for (Book book : books) {
-          for (Book userBook : userBooks) {
-              // If the similarity score is above 70%, add to common books
-              if (findLCS(book.getTitle(), userBook.getTitle()) > 0.7) {
-                  commonBooks.add(book);
-                  break;
-              }
-          }
-      }
-      return commonBooks;
-  }
+        List<Book> commonBooks = new ArrayList<>();
+        // Loop through each book to find matches
+        for (Book book : books) {
+            for (Book userBook : userBooks) {
+                // If the similarity score is above 70%, add to common books
+                if (findLCS(book.getTitle(), userBook.getTitle()) > 0.7) {
+                    commonBooks.add(book);
+                    break;
+                }
+            }
+        }
+        return commonBooks;
+    }
 
-  /**
-   * Finds the Longest Common Subsequence (LCS) between two strings.
-   *
-   * @param str1 The first string.
-   * @param str2 The second string.
-   * @return The ratio of the LCS length to the length of the shorter string.
-   */
-  public double findLCS(String str1, String str2) {
-      // Setup a table to calculate longest common subsequence
-      int[][] dp = new int[str1.length() + 1][str2.length() + 1];
-      for (int i = 0; i < str1.length(); i++) {
-          for (int j = 0; j < str2.length(); j++) {
-              if (str1.charAt(i) == str2.charAt(j)) {
-                  // If characters match, increase count
-                  dp[i + 1][j + 1] = dp[i][j] + 1;
-              } else {
-                  // Otherwise, take the maximum from left or top cell
-                  dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
-              }
-          }
-      }
-      // Return the ratio of the LCS to the length of the shorter string
-      return (double) dp[str1.length()][str2.length()] / Math.min(str1.length(), str2.length());
-  }
-  /**
+    /**
+     * Finds the Longest Common Subsequence (LCS) between two strings.
+     *
+     * @param str1 The first string.
+     * @param str2 The second string.
+     * @return The ratio of the LCS length to the length of the shorter string.
+     */
+    public double findLCS(String str1, String str2) {
+        // Setup a table to calculate longest common subsequence
+        int[][] dp = new int[str1.length() + 1][str2.length() + 1];
+        for (int i = 0; i < str1.length(); i++) {
+            for (int j = 0; j < str2.length(); j++) {
+                if (str1.charAt(i) == str2.charAt(j)) {
+                    // If characters match, increase count
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                } else {
+                    // Otherwise, take the maximum from left or top cell
+                    dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+        }
+        // Return the ratio of the LCS to the length of the shorter string
+        return (double) dp[str1.length()][str2.length()] / Math.min(str1.length(), str2.length());
+    }
+
+    /**
      * Writes the books owned by the user to the console.
      *
      * @param pathFileBooks The file path of the user's book data.
@@ -2375,6 +2380,7 @@ public class Bookshelforganizer {
         }
         return true;
     }
+
     /**
      * Writes the borrowed books history to the console.
      *
@@ -2433,6 +2439,53 @@ public class Bookshelforganizer {
         return hasGivenBooks;
     }
 
+    /**
+     * Writes the books available for borrowing to the console, excluding books
+     * owned by the user.
+     *
+     * @param pathFileBooks     The file path of all book data.
+     * @param pathFileHistories The file path of loaned histories data.
+     * @return true if books are written successfully, false otherwise.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public boolean writeBooksExcludingUser(String pathFileBooks, String pathFileHistories)
+            throws ClassNotFoundException, IOException {
+        List<Book> books = loadBooksExcludingUser(pathFileBooks);
+        if (books.isEmpty()) {
+            out.println("There are no books you can borrow..");
+            return false;
+        }
 
+        // In here we are saving the book ıds which is borrowed to list
+        List<LoanedHistory> loanedHistories = loadLoanedHistories(pathFileHistories);
+        List<Integer> borrowedBookIds = new ArrayList<>();
 
+        for (LoanedHistory history : loanedHistories) {
+            // If the user already borrowed the book, add bookId to the list
+            if (history.getDebtorUserId().equals(loggedUser.getId()) && !history.getHasGivenBack()) {
+                borrowedBookIds.add(history.getBookId());
+            }
+        }
+
+        boolean foundAvailableBook = false;
+        for (Book book : books) {
+            // If user already borrowed the book, don't show it
+            if (!borrowedBookIds.contains(book.getId())) {
+                out.println("ID: " + book.getId() + ", Title: " + book.getTitle() + ", Author: "
+                        + book.getAuthor()
+                        + ", Genre: " + book.getGenre() + ", Owner Name Surname: " + book.getOwner().getName() + " "
+                        + book.getOwner().getSurname());
+                foundAvailableBook = true;
+            }
+        }
+
+        if (!foundAvailableBook) {
+            out.println("There are no books available for you to borrow.");
+            return false;
+        }
+
+        return true;
+    }
 }
