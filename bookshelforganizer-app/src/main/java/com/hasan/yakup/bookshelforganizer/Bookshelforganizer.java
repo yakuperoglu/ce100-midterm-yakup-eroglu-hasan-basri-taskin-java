@@ -731,6 +731,195 @@ public class Bookshelforganizer {
 
       return loginUser(loginUser, pathFileUsers);
   }
+  
+    /**
+     * @brief Logs in the user.
+     * @param data          The user data for login.
+     * @param pathFileUsers The file path for user data.
+     * @return true if the user is successfully logged in, false otherwise.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws FileNotFoundException  If the file cannot be found.
+     * @throws IOException            If an I/O error occurs.
+     */
+    public boolean loginUser(User data, String pathFileUsers)
+            throws ClassNotFoundException, FileNotFoundException, IOException {
+        boolean isAuthenticated = false;
 
+        // Checks if file path exists
+        File file = new File(pathFileUsers);
+        if (file.exists()) {
+            try (FileInputStream fileIn = new FileInputStream(pathFileUsers);
+                    ObjectInputStream in = new ObjectInputStream(fileIn)) {
+                ArrayList<User> users = (ArrayList<User>) in.readObject(); // Read as array
+                for (User user : users) {
+                    if (user.getEmail().equals(data.getEmail()) && user.getPassword().equals(data.getPassword())) {
+                        setLoggedUser(user);
+                        isAuthenticated = true;
+                        out.println(("You logged succesfully.."));
+                        return true;
+                    }
+                }
+            }
+        }
+        if (!isAuthenticated)
+            out.println("There are no users in this information..");
+        enterToContinue();
+        return isAuthenticated;
+    }
+
+    /**
+     * @brief Displays the user menu.
+     * @return true to indicate successful display of the user menu.
+     * @throws InterruptedException If the thread is interrupted while waiting.
+     * @throws IOException          If an I/O error occurs.
+     */
+    public boolean userMenu() throws InterruptedException, IOException {
+        clearScreen();
+        out.println("Welcome to User Operations\n\n");
+        out.println("1. Book Cataloging");
+        out.println("2. Loan Management");
+        out.println("3. WishList Management");
+        out.println("4. Return to Main Menu");
+        out.print("Please enter a number to select: ");
+        return true;
+    }
+
+    /**
+     * @brief Handles user operations menu.
+     * @param pathFileBooks     The file path for book data.
+     * @param pathFileHistories The file path for loan histories.
+     * @param pathFileWishlist  The file path for wish list data.
+     * @return true if the user chooses to return to the main menu, false otherwise.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean userOperations(String pathFileBooks, String pathFileHistories, String pathFileWishlist)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        int choice;
+
+        enterToContinue();
+        while (true) {
+            clearScreen();
+            userMenu();
+
+            choice = tryParseInt(scanner.nextLine());
+
+            if (choice == -1) {
+                handleInputError();
+                enterToContinue();
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    bookCataloging(pathFileBooks);
+                    break;
+
+                case 2:
+                    loanManagement(pathFileBooks, pathFileHistories);
+                    break;
+
+                case 3:
+                    wishList(pathFileBooks, pathFileWishlist);
+                    break;
+
+                case 4:
+                    return false;
+
+                default:
+                    clearScreen();
+                    out.println("Invalid choice. Please try again.");
+                    enterToContinue();
+                    break;
+            }
+        }
+    }
+
+    /**
+     * @brief Displays the book cataloging menu.
+     * @return true to indicate successful display of the book cataloging menu.
+     * @throws InterruptedException If the thread is interrupted while waiting.
+     * @throws IOException          If an I/O error occurs.
+     */
+    public boolean bookCatalogingMenu() throws InterruptedException, IOException {
+        clearScreen();
+        out.println("Welcome to Book Operations\n\n");
+        out.println("1. Add Book");
+        out.println("2. Delete Book");
+        out.println("3. Update Book");
+        out.println("4. View Catalog");
+        out.println("5. View Books by Price");
+        out.println("6. View Total Price of All Books");
+        out.println("7. Minimum cost of arranging books");
+        out.println("8. Return to User Operations Menu");
+        out.print("Please enter a number to select: ");
+
+        return true;
+    }
+
+    /**
+     * @brief Manages book cataloging operations.
+     * @param pathFileBooks The file path for book data.
+     * @return false to indicate the user has chosen to return to the user
+     *         operations menu.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean bookCataloging(String pathFileBooks)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        int choice;
+        while (true) {
+            bookCatalogingMenu();
+
+            choice = tryParseInt(scanner.nextLine());
+
+            if (choice == -1) {
+                handleInputError();
+                enterToContinue();
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    addBookMenu(pathFileBooks);
+                    break;
+
+                case 2:
+                    deleteBookMenu(pathFileBooks);
+                    break;
+
+                case 3:
+                    updateBookMenu(pathFileBooks);
+                    break;
+
+                case 4:
+                    viewCatalog(pathFileBooks);
+                    break;
+
+                case 5:
+                    selectBooksByPriceMenu(pathFileBooks);
+                    break;
+                case 6:
+                    calculateTotalPrice(pathFileBooks);
+                    break;
+                case 7:
+                    minCostArrangingBooks(pathFileBooks);
+                    break;
+                case 8:
+                    return false;
+
+                default:
+                    clearScreen();
+                    out.println("Invalid choice. Please try again.");
+                    enterToContinue();
+                    break;
+            }
+        }
+    }
 
 }
