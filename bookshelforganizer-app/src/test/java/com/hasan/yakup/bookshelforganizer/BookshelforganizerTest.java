@@ -526,4 +526,47 @@ public class BookshelforganizerTest {
     assertTrue(res);
   }
 
+  @Test
+  public void testSuggestBooksToBorrow_NoCommonBooks()
+      throws ClassNotFoundException, IOException, InterruptedException {
+
+    List<Book> result = library.suggestBooksToBorrow("test_books.bin");
+
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testSuggestBooksToBorrow_CommonBooksExist()
+      throws ClassNotFoundException, IOException, InterruptedException {
+    createTestFileBooks();
+
+    List<Book> result = library.suggestBooksToBorrow(testFilePathBooks);
+
+    assertEquals(3, result.size());
+  }
+
+  @Test
+  public void testFindCommonBooks_NoCommonBooks() throws ClassNotFoundException, IOException {
+
+    List<Book> result = library.findCommonBooks("test_books.bin");
+
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void testFindCommonBooks_CommonBooksExist() throws ClassNotFoundException, IOException {
+    createTestFileBooks();
+    List<Book> result = library.findCommonBooks(testFilePathBooks);
+
+    assertEquals(3, result.size());
+  }
+
+  @Test
+  public void testFindLCS_WhenOneStringIsSubsetOfTheOther() {
+
+    double result = library.findLCS("abc", "abcd");
+
+    assertEquals(1, result, 0.001);
+  }
+
 }
