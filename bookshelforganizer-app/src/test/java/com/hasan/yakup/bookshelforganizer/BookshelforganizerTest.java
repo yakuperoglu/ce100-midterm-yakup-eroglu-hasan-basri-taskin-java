@@ -405,4 +405,87 @@ public class BookshelforganizerTest {
     assertEquals(testHistories.size(), result.size());
   }
 
+  @Test
+  public void testGetNewBookId_NoBooksInFile() throws FileNotFoundException, ClassNotFoundException, IOException {
+    // Call getNewBookId method with empty file
+    int result = library.getNewBookId("empty_file.bin");
+    assertEquals(1, result); // Expect new book id to be 1 when no books exist
+
+  }
+
+  @Test
+  public void testGetNewBookId_ExistingBooksInFile() throws FileNotFoundException, IOException, ClassNotFoundException {
+    createTestFileBooks();
+
+    // Call getNewBookId method
+    int result = library.getNewBookId(testFilePathBooks);
+
+    // Check if new book id is one greater than the maximum existing book id
+    assertEquals(5, result);
+  }
+
+  @Test
+  public void testGetNewWishlistId_NoBooksInWishlist()
+      throws FileNotFoundException, ClassNotFoundException, IOException {
+    // Call getNewWishlistId method with empty wishlist
+    int result = library.getNewWishlistId("empty_wishlist.bin");
+    assertEquals(1, result); // Expect new wishlist id to be 1 when no books exist in wishlist
+  }
+
+  @Test
+  public void testGetNewWishlistId_ExistingBooksInWishlist()
+      throws FileNotFoundException, ClassNotFoundException, IOException {
+
+    // Prepare test data
+    createTestFileWishlists();
+
+    // Call getNewWishlistId method
+    int result = library.getNewWishlistId(testFilePathWishlist);
+    // Check if new wishlist id is one greater than the maximum existing book id in
+    // wishlist
+    assertEquals(5, result);
+
+  }
+
+  @Test
+  public void testRandomizedQuickSortBookIds() {
+
+    // Prepare test data
+    List<Book> testBooks = new ArrayList<>();
+    testBooks
+        .add(new Book(2, "Book2", "Author2", "Genre2", new User(2, "User2", "User2", "example.com", "Qwe123!"), 13));
+    testBooks
+        .add(new Book(1, "Book1", "Author1", "Genre1", new User(2, "User2", "User2", "example.com", "Qwe123!"), 123));
+    testBooks
+        .add(new Book(4, "Book4", "Author4", "Genre4", new User(2, "User2", "User2", "example.com", "Qwe123!"), 153));
+    testBooks
+        .add(new Book(3, "Book3", "Author3", "Genre3", new User(2, "User2", "User2", "example.com", "Qwe123!"), 1));
+
+    // Sort the testBooks list using randomizedQuickSortBookIds method
+    library.randomizedQuickSortBookIds(testBooks, 0, testBooks.size() - 1);
+
+    // Check if the testBooks list is sorted in ascending order of book ids
+    for (int i = 0; i < testBooks.size() - 1; i++) {
+      assertTrue(testBooks.get(i).getId() <= testBooks.get(i + 1).getId());
+    }
+  }
+
+  @Test
+  public void testGetNewUserId_NoUsersInFile() throws FileNotFoundException, ClassNotFoundException, IOException {
+    int result = library.getNewUserId("empty_users.bin");
+    assertEquals(1, result); // Expect new user id to be 1 when no users exist
+
+  }
+
+  @Test
+  public void testGetNewUserId_ExistingUsersInFile() throws FileNotFoundException, ClassNotFoundException, IOException {
+    createTestFileUsers();
+
+    // Call getNewUserId method
+    int result = library.getNewUserId(testFilePathUsers);
+    // Check if new user id is one greater than the maximum existing user id
+    assertEquals(4, result);
+
+  }
+
 }
