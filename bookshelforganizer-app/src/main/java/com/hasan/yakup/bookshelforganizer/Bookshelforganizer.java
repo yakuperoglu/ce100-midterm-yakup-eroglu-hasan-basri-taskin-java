@@ -2375,6 +2375,64 @@ public class Bookshelforganizer {
         }
         return true;
     }
+    /**
+     * Writes the borrowed books history to the console.
+     *
+     * @param pathFileHistories The file path of the loaned histories data.
+     * @return true if borrowed books history is written successfully, false
+     *         otherwise.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean writeBorrowedBooksToConsole(String pathFileHistories)
+            throws IOException, ClassNotFoundException {
+
+        List<LoanedHistory> histories = loadLoanedHistoriesBorrowedBooks(pathFileHistories);
+        boolean hasBorrowedBooks = false;
+
+        for (LoanedHistory history : histories) {
+            out.println("Book ID: " + history.getBookId() + ", Book Name: " + history.getBookName()
+                    + ", Owner Name Surname: " + history.getBookOwner() + ", Is Approved: "
+                    + (history.getIsApproved() ? "Yes" : "No") + ", Has Given Back: "
+                    + (history.getHasGivenBack() ? "Yes" : "No"));
+            hasBorrowedBooks = true;
+        }
+
+        if (!hasBorrowedBooks) {
+            out.println("You didn't borrowed any books");
+        }
+        return hasBorrowedBooks;
+    }
+
+    /**
+     * Writes the given books history to the console.
+     *
+     * @param pathFileHistories The file path of the loaned histories data.
+     * @return true if given books history is written successfully, false otherwise.
+     * @throws FileNotFoundException  If the specified file path is invalid.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean writeGivenBooksToConsole(String pathFileHistories)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<LoanedHistory> histories = loadLoanedHistoriesGivenBooks(pathFileHistories);
+
+        boolean hasGivenBooks = false;
+
+        for (LoanedHistory history : histories) {
+            out.println("Book ID: " + history.getBookId() + ", Book Name: " + history.getBookName()
+                    + ", Debtor Name Surname: " + history.getDebtorUser());
+            hasGivenBooks = true;
+        }
+
+        if (!hasGivenBooks) {
+            out.println("You didn't give any books");
+        }
+        return hasGivenBooks;
+    }
+
 
 
 }
