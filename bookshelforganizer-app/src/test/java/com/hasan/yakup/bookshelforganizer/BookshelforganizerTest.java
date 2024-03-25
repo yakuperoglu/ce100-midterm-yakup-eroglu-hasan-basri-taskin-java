@@ -1270,4 +1270,63 @@ public class BookshelforganizerTest {
     assertFalse(res);
   }
 
+  @Test
+  public void testSearchWishlist_ValidKey_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    createTestFileBooks();
+
+    // Call the method that handles menu
+    boolean res = library.searchWishlist(testFilePathHistories, "Book1");
+    assertFalse(res);
+  }
+
+  @Test
+  public void testSearchWishlist_ValidKey_ShouldReturnTrue()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    createTestFileBooks();
+    createTestFileWishlists();
+    setLoggedUser();
+
+    // Call the method that handles menu
+    boolean res = library.searchWishlist(testFilePathWishlist, "Book3");
+    assertTrue(res);
+  }
+
+  @Test
+  public void testSearchWishlist_DoenstExistBook_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    createTestFileBooks();
+    createTestFileWishlists();
+    setLoggedUser();
+
+    // Call the method that handles menu
+    boolean res = library.searchWishlist(testFilePathWishlist, "Book4");
+    assertFalse(res);
+  }
+
+  @Test
+  public void testAddBookToWishListMenu_InvalidCost_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "Example\nExample\nExample\nqwe3\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.addBookToWishListMenu(testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testDeleteBookFromWishListMenu_EmptyWishlist_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+
+    // Call the method that handles register menu
+    boolean res = library.deleteBookFromWishListMenu(testFilePathWishlist);
+    assertFalse(res);
+  }
+
 }
