@@ -1328,5 +1328,142 @@ public class Bookshelforganizer {
       enterToContinue();
       return isFound;
   }
+  
+    /**
+     * Displays the catalog of books stored in the system.
+     * 
+     * @param filePathBooks The file path of the book data.
+     * @return True if the catalog was displayed successfully, false otherwise.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean viewCatalog(String filePathBooks) throws InterruptedException, IOException, ClassNotFoundException {
+      clearScreen();
+      writeBooksToConsole(filePathBooks);
+      enterToContinue();
+      return true;
+  }
+
+  /**
+   * Displays the menu for selecting books based on a specified budget,
+   * prompts the user for their budget, and lists the books within the budget.
+   * 
+   * @param pathFileBooks The file path of the book data.
+   * @return True if the book selection was successful, false otherwise.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws InterruptedException   If the operation is interrupted.
+   */
+  public boolean selectBooksByPriceMenu(String pathFileBooks)
+          throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+      clearScreen();
+      List<Book> books = loadOwnedBooks(pathFileBooks);
+
+      out.print("Enter your budget: ");
+      int budget = tryParseInt(scanner.nextLine());
+
+      if (budget == -1) {
+          handleInputError();
+          enterToContinue();
+          return false;
+      }
+      List<Book> selectedBooks = selectBooksByPrice(books, budget);
+
+      out.println("Selected books within your budget:");
+      for (Book book : selectedBooks) {
+          out.println(book.getTitle() + " by " + book.getAuthor() + " - " + book.getPrice() + "TL");
+      }
+      enterToContinue();
+      return true;
+  }
+
+  /**
+   * Selects books based on a specified budget using dynamic programming.
+   * 
+   * @param books  The list of available books.
+   * @param budget The budget for book selection.
+   * @return A list of selected books within the given budget.
+   */
+  public List<Book> selectBooksByPrice(List<Book> books, int budget) {
+      int totalBooks = books.size();
+
+      // This DP (Dynamic Programming) table stores the maximum total price
+      // considering different numbers of
+      // books and budgets.
+      // It helps in efficiently calculating the optimal selection of books within the
+      // given budget.
+
+      int[][] dpTable = new int[totalBooks + 1][budget + 1];
+
+      // Fill in the DP table
+      for (int bookIndex = 0; bookIndex <= totalBooks; bookIndex++) {
+          for (int currentBudget = 0; currentBudget <= budget; currentBudget++) {
+              // Base case: If there are no books or the budget is zero,
+              // the total price we can afford is zero.
+              if (bookIndex == 0 || currentBudget == 0)
+                  dpTable[bookIndex][currentBudget] = 0;
+              else {
+                  Book currentBook = books.get(bookIndex - 1);
+                  // If the current book's price is less than or equal to the current budget,
+                  // we consider including it in the selection.
+                  if (currentBook.getPrice() <= currentBudget) {
+                      // Decide whether to include the current book or not,
+                      // maximizing the total price within the budget.
+                      dpTable[bookIndex][currentBudget] = Math.max(
+                              currentBook.getPrice() + dpTable[bookIndex - 1][currentBudget - currentBook.getPrice()],
+                              dpTable[bookIndex - 1][currentBudget]);
+                  } else {
+                      // If the current book's price exceeds the current budget,
+                      // we cannot include it in the selection, so we keep the previous best price.
+                      dpTable[bookIndex][currentBudget] = dpTable[bookIndex - 1][currentBudget];
+                  }
+              }
+          }
+      }
+
+      // Trace back to find the selected books
+      List<Book> selectedBooks = new ArrayList<>();
+      int remainingBudget = budget;
+      int totalPrice = dpTable[totalBooks][budget];
+
+      for (int bookIndex = totalBooks; bookIndex > 0 && totalPrice > 0; bookIndex--) {
+          if (totalPrice != dpTable[bookIndex - 1][remainingBudget]) {
+              // If the current book was selected, add it to the list of selected books.
+              selectedBooks.add(books.get(bookIndex - 1));
+              // Update the remaining budget and total price
+              totalPrice -= books.get(bookIndex - 1).getPrice();
+              remainingBudget -= books.get(bookIndex - 1).getPrice();
+          }
+      }
+
+      return selectedBooks;
+  }
+
+  /**
+   * Displays the menu for loan management and prompts the user to select
+   * an action related to loaning or borrowing books.
+   * 
+   * @return True if the loan management menu is displayed successfully, false
+   *         otherwise.
+   * @throws InterruptedException If the operation is interrupted.
+   * @throws IOException          If an I/O error occurs.
+   */
+  public boolean loanManagementMenu() throws InterruptedException, IOException {
+      clearScreen();
+      out.println("Loan Management Menu\n\n");
+      out.println("1. Give Book");
+      out.println("2. Borrow Book");
+      out.println("3. Show borrowed books");
+      out.println("4. Show given books");
+      out.println("5. Show suggestions for books to borrow");
+      out.println("6. Return to User Operations Menu");
+      out.print("Please enter a number to select: ");
+      return true;
+  }
+
 
 }
