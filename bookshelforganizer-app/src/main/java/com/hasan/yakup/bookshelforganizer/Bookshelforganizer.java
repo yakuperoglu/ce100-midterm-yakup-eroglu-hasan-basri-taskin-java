@@ -87,4 +87,146 @@ public class Bookshelforganizer {
             return -1;
         }
     }
+    
+    /**
+     * @brief Waits for user input to continue the program.
+     * @details Displays a message prompting the user to press any key to continue.
+     */
+    public boolean enterToContinue() {
+      out.println("Press enter to continue...");
+      if (!isTestMode) {
+          scanner.nextLine();
+      }
+      return true;
+  }
+
+  /**
+   * @brief Loads the prices of books owned by the logged-in user.
+   * @param pathFileBooks The file path to the book data.
+   * @return A 2D array containing the prices of owned books.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   * @throws IOException            If an I/O error occurs.
+   */
+  public int[][] loadOwnedBookPrices(String pathFileBooks)
+          throws FileNotFoundException, ClassNotFoundException, IOException {
+      List<Book> ownedBooks = loadOwnedBooks(pathFileBooks);
+      int numBooks = ownedBooks.size();
+
+      int[][] bookPrices = new int[1][numBooks]; // Assuming only one row for book prices
+
+      // Populate book prices randomly
+      for (int i = 0; i < numBooks; i++) {
+          bookPrices[0][i] = ownedBooks.get(i).getPrice(); // Random price between 10 and 59
+      }
+
+      return bookPrices;
+  }
+
+  /**
+   * @brief Loads the books owned by the logged-in user.
+   * @param pathFileBooks The file path to the book data.
+   * @return A list of books owned by the logged-in user.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public List<Book> loadOwnedBooks(String pathFileBooks)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+
+      return loadBooks(pathFileBooks, loggedUser.getId());
+  }
+
+  /**
+   * @brief Loads the books wishlisted by the logged-in user.
+   * @param pathFileWishlist The file path to the wishlist data.
+   * @return A list of books wishlisted by the logged-in user.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public List<Book> loadWishlistedBooks(String pathFileWishlist)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+
+      return loadWishlist(pathFileWishlist, loggedUser.getId());
+  }
+
+  /**
+   * @brief Loads the books excluding those owned by the logged-in user.
+   * @param pathFileBooks The file path to the book data.
+   * @return A list of books excluding those owned by the logged-in user.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public List<Book> loadBooksExcludingUser(String pathFileBooks)
+          throws IOException, ClassNotFoundException {
+      List<Book> allBooks = loadBooks(pathFileBooks);
+      List<Book> filteredBooks = new ArrayList<>();
+
+      for (Book book : allBooks) {
+          if (!book.getOwner().getId().equals(loggedUser.getId())) {
+              filteredBooks.add(book);
+          }
+      }
+
+      return filteredBooks;
+  }
+
+  /**
+   * @brief Loads the books owned by a specific user.
+   * @param pathFileBooks The file path to the book data.
+   * @param userId        The ID of the user whose books are to be loaded.
+   * @return A list of books owned by the specified user.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public List<Book> loadBooks(String pathFileBooks, Integer userId)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+      List<Book> filteredBooks = new ArrayList<>();
+
+      File file = new File(pathFileBooks);
+
+      if (file.exists()) {
+          try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileBooks))) {
+              List<Book> allBooks = (List<Book>) ois.readObject();
+              for (Book book : allBooks) {
+                  if (book.getOwner().getId().equals(userId)) {
+                      filteredBooks.add(book);
+                  }
+              }
+          }
+      }
+
+      return filteredBooks;
+  }
+
+  /**
+   * @brief Loads the books from the specified file.
+   * @param pathFileBooks The file path to the book data.
+   * @return A list of books loaded from the file, or an empty list if the file
+   *         does not exist.
+   * @throws FileNotFoundException  If the specified file is not found.
+   * @throws IOException            If an I/O error occurs.
+   * @throws ClassNotFoundException If the class of a serialized object cannot be
+   *                                found.
+   */
+  public List<Book> loadBooks(String pathFileBooks)
+          throws FileNotFoundException, IOException, ClassNotFoundException {
+
+      File file = new File(pathFileBooks);
+
+      if (file.exists()) {
+          try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(pathFileBooks))) {
+              return (List<Book>) ois.readObject();
+          }
+      }
+      return new ArrayList<>();
+  }
+
 }
