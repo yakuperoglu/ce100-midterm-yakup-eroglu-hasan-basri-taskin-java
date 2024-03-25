@@ -1019,4 +1019,115 @@ public class BookshelforganizerTest {
     assertFalse(res);
   }
 
+  @Test
+  public void testDeleteBook_InvalidInputCostReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    // Call the method that handles register menu
+    boolean res = library.deleteBook(123123123, testFilePathBooks);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testLoanManagement_InvalidInputShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "qwe\n6\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.loanManagement(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testLoanManagement_InvalidChoiceShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "53\n6\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.loanManagement(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testLoanManagement_ShouldEnterEveryFunctionAndReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileBooks();
+    String inputString = "1\n2\n\n3\n4\n5\n6\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles register menu
+    boolean res = library.loanManagement(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testGiveBackBookMenu_InvalidId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    // Create a history file
+
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    // Write the history file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    String inputString = "qwe\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.giveBackBookMenu(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testGiveBackBookMenu_ValidId_ShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    // Create a history file
+
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 1, "Owner1", 1, "User1", false, true));
+    testHistories.add(new LoanedHistory(2, "Book2", 2, "Owner2", 2, "User2", false, true));
+    // Write the history file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    String inputString = "132\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles menu
+    boolean res = library.giveBackBookMenu(testFilePathBooks, testFilePathHistories);
+    assertFalse(res);
+  }
+
 }
