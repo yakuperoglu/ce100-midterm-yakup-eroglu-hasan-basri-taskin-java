@@ -488,4 +488,42 @@ public class BookshelforganizerTest {
 
   }
 
+  @Test
+  public void testHeapify() {
+    // Parent value is smaller than child value
+    int[] arr2 = { 3, 5, 4 };
+    assertTrue(library.heapify(arr2, arr2.length, 0)); // Should return true
+  }
+
+  @Test
+  public void testHeapSort() {
+
+    // Test 1: Sorting an array in ascending order
+    int[] arr1 = { 12, 11, 13, 5, 6, 7 };
+    int[] expected1 = { 5, 6, 7, 11, 12, 13 };
+    library.heapSort(arr1);
+    assertArrayEquals(expected1, arr1);
+
+    // Test 2: Sorting an array in descending order
+    int[] arr2 = { 9, 8, 7, 6, 5, 4 };
+    int[] expected2 = { 4, 5, 6, 7, 8, 9 };
+    library.heapSort(arr2);
+    assertArrayEquals(expected2, arr2);
+  }
+
+  @Test
+  public void testPrintMainMenu() {
+    // Call the method that prints the main menu
+    boolean res = library.printMainMenu();
+
+    assertTrue(res);
+  }
+
+  @Test
+  public void testUserMenu() throws InterruptedException, IOException {
+    boolean res = library.userMenu();
+
+    assertTrue(res);
+  }
+
 }
