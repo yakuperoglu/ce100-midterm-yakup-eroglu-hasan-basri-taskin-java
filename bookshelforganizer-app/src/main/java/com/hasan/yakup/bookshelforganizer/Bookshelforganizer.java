@@ -921,5 +921,177 @@ public class Bookshelforganizer {
             }
         }
     }
+    
+    /**
+     * @brief Calculates the minimum cost of arranging books.
+     * @param pathToBooksFile The file path for book data.
+     * @return true to indicate successful calculation of the minimum cost of
+     *         arranging books.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     */
+    public boolean minCostArrangingBooks(String pathToBooksFile)
+            throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+        clearScreen();
+        ArrayList<Book> ownedBooks = (ArrayList<Book>) loadOwnedBooks(pathToBooksFile);
+        Book[] books = ownedBooks.toArray(new Book[ownedBooks.size()]);
+
+        int numBooks = books.length;
+        int[][] costMatrix = new int[numBooks][numBooks];
+
+        // Fill cost matrix with maximum values
+        for (int[] row : costMatrix)
+            Arrays.fill(row, Integer.MAX_VALUE);
+
+        // Fill diagonal with 0 as single book multiplication cost is 0
+        for (int i = 0; i < numBooks; i++)
+            costMatrix[i][i] = 0;
+
+        // Perform Matrix Chain Multiplication Order Dynamic Programming
+        for (int chainLen = 2; chainLen < numBooks; chainLen++) {
+            for (int i = 1; i < numBooks - chainLen + 1; i++) {
+                int j = i + chainLen - 1;
+                for (int k = i; k <= j - 1; k++) {
+                    int cost = costMatrix[i][k] + costMatrix[k + 1][j]
+                            + books[i - 1].getPrice() * books[k].getPrice() * books[j].getPrice();
+                    if (cost < costMatrix[i][j])
+                        costMatrix[i][j] = cost;
+                }
+            }
+        }
+
+        // Reconstruct optimal ordering
+        // This part depends on how you want to handle the ordering information
+
+        // For simplicity, let's just print the minimum cost
+        out.println("Minimum cost of arranging books: " + costMatrix[1][numBooks - 1]);
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * @brief Calculates the total price of all books.
+     * @param pathFileBooks The file path for book data.
+     * @return true to indicate successful calculation of the total price.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws InterruptedException   If the thread is interrupted while waiting.
+     */
+    public boolean calculateTotalPrice(String pathFileBooks)
+            throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+        clearScreen();
+        int[][] bookPrices = loadOwnedBookPrices(pathFileBooks);
+        // Check if the matrix is valid for multiplication
+        if (!isValidMatrix(bookPrices)) {
+            out.println("Total price of all books: 0TL");
+            enterToContinue();
+            return false;
+        }
+
+        // Get the number of columns of the matrix
+        int cols = bookPrices[0].length;
+
+        // Create a sequence of matrices where each matrix is a single book price
+        int[][][] bookMatrixSequence = new int[cols][1][1];
+        for (int i = 0; i < cols; i++) {
+            bookMatrixSequence[i] = new int[][] { { bookPrices[0][i] } };
+        }
+
+        // Create an optimal split table (s) for the bookMatrixSequence
+        int[][] s = createOptimalSplitTable(bookMatrixSequence.length);
+
+        // Perform matrix chain multiplication to calculate the total price
+        int[][] totalPriceMatrix = matrixChainMultiply(bookMatrixSequence, s, 1,
+                bookMatrixSequence.length);
+
+        // The total price is located at the top left corner of the totalPriceMatrix
+        out.println("Total price of all books: " + totalPriceMatrix[0][0] + " TL");
+        enterToContinue();
+        return true;
+    }
+
+    /**
+     * @brief Checks if the given matrix is valid for multiplication.
+     * @param matrix The matrix to be checked.
+     * @return true if the matrix is valid for multiplication, false otherwise.
+     */
+    public boolean isValidMatrix(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+        int cols = matrix[0].length;
+        for (int[] row : matrix) {
+            if (row.length != cols) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @brief Creates the optimal split table for matrix chain multiplication.
+     * @param numMatrices The number of matrices in the chain.
+     * @return The optimal split table.
+     */
+    public int[][] createOptimalSplitTable(int numMatrices) {
+        // Dummy implementation: Assuming a linear split for demonstration
+        int[][] s = new int[numMatrices - 1][numMatrices];
+        for (int i = 0; i < numMatrices - 1; i++) {
+            for (int j = 0; j < numMatrices; j++) {
+                s[i][j] = Math.min(i + 1, numMatrices - 1);
+            }
+        }
+        return s;
+    }
+
+    /**
+     * @brief Performs matrix chain multiplication.
+     * @param A The array of matrices to be multiplied.
+     * @param s The optimal split table.
+     * @param i The starting index of the chain.
+     * @param j The ending index of the chain.
+     * @return The result of the matrix chain multiplication.
+     */
+    public int[][] matrixChainMultiply(int[][][] A, int[][] s, int i, int j) {
+        if (j > i) {
+            int split = s[i - 1][j - 2]; // Retrieve the split point from the s table
+            int[][] X = matrixChainMultiply(A, s, i, split); // Multiply the left subchain
+            int[][] Y = matrixChainMultiply(A, s, split + 1, j); // Multiply the right subchain
+            return matrixMultiply(X, Y); // Combine the results of the subchains
+        } else {
+            // Base case: when the chain has only one matrix, return it directly
+            return A[i - 1]; // Adjust for 0-based indexing
+        }
+    }
+
+    /**
+     * @brief Performs matrix multiplication.
+     * @param A The first matrix.
+     * @param B The second matrix.
+     * @return The result of the matrix multiplication.
+     */
+    public int[][] matrixMultiply(int[][] A, int[][] B) {
+        int rowsA = A.length, colsA = A[0].length; // Dimensions of matrix A
+        int rowsB = B.length, colsB = B[0].length; // Dimensions of matrix B
+        // Check if matrices are compatible for multiplication
+        if (colsA != rowsB) {
+            return new int[0][0]; // Return an empty matrix if not compatible
+        }
+        int[][] result = new int[rowsA][colsB]; // The resulting matrix of the multiplication
+        for (int i = 0; i < rowsA; i++) {
+            for (int j = 0; j < colsB; j++) {
+                for (int k = 0; k < colsA; k++) {
+                    result[i][j] += A[i][k] * B[k][j]; // Calculate each element of the result matrix
+                }
+            }
+        }
+        return result;
+    }
+
 
 }
