@@ -10,7 +10,7 @@
 @package com.ucoruh.bookshelforganizer
 @brief The com.ucoruh.bookshelforganizer package contains all the classes and files related to the Bookshelforganizer App.
 */
-package com.ucoruh.bookshelforganizer;
+package com.hasan.yakup.bookshelforganizer;
 
 import org.slf4j.LoggerFactory;
 

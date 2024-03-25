@@ -4,7 +4,7 @@
 @brief This file contains the test cases for the Bookshelforganizer class.
 @details This file includes test methods to validate the functionality of the Bookshelforganizer class. It uses JUnit for unit testing.
 */
-package com.ucoruh.bookshelforganizer;
+package com.hasan.yakup.bookshelforganizer;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.hasan.yakup.bookshelforganizer.Bookshelforganizer;
 
 /**
 
