@@ -1952,6 +1952,110 @@ public class Bookshelforganizer {
 
         return true;
     }
+    
+    /**
+     * Displays the menu for deleting a book from the wishlist and handles user
+     * input to perform the operation.
+     *
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully deleted from the wishlist, false
+     *         otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws InterruptedException   If the operation is interrupted.
+     */
+    public boolean deleteBookFromWishListMenu(String pathFileWishlist)
+            throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+        clearScreen();
+        boolean isUserHasBooks = writeWishlistToConsole(pathFileWishlist);
+        if (!isUserHasBooks) {
+            enterToContinue();
+            return false;
+        }
+        out.print("Enter a number to delete book from wishlist: ");
 
+        int bookId = tryParseInt(scanner.nextLine());
+
+        if (bookId == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
+
+        return deleteBookFromWishlist(bookId, pathFileWishlist);
+    }
+
+    /**
+     * Deletes a book from the wishlist.
+     *
+     * @param bookId           The ID of the book to be deleted from the wishlist.
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully deleted from the wishlist, false
+     *         otherwise.
+     * @throws FileNotFoundException  If the specified file is not found.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean deleteBookFromWishlist(int bookId, String pathFileWishlist)
+            throws FileNotFoundException, IOException, ClassNotFoundException {
+        List<Book> books = loadWishlist(pathFileWishlist);
+        boolean isFound = false;
+
+        for (Book book : books) {
+            if (book.getId() == bookId) {
+                isFound = true;
+                books.remove(book);
+                break;
+            }
+        }
+
+        if (isFound) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(pathFileWishlist))) {
+                oos.writeObject(books);
+            }
+            out.println("Book with ID '" + bookId + "' has been deleted successfully from wishlist.");
+            enterToContinue();
+            return true;
+        }
+
+        out.println("There is no book with ID '" + bookId + "'.");
+        enterToContinue();
+        return false;
+    }
+
+    /**
+     * Displays the menu for marking a book as acquired and handles user input to
+     * perform the operation.
+     *
+     * @param pathFileBooks    The file path of the book data.
+     * @param pathFileWishlist The file path of the wishlist data.
+     * @return True if the book is successfully marked as acquired, false otherwise.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws IOException            If an I/O error occurs.
+     * @throws ClassNotFoundException If the class of a serialized object cannot be
+     *                                found.
+     */
+    public boolean markAsAcquiredMenu(String pathFileBooks, String pathFileWishlist)
+            throws InterruptedException, IOException, ClassNotFoundException {
+        clearScreen();
+        boolean result = writeWishlistToConsole(pathFileWishlist);
+        if (!result) {
+            enterToContinue();
+            return false;
+        }
+        out.print("Enter the ID of the book you want to mark as acquired: ");
+        int bookId = tryParseInt(scanner.nextLine());
+
+        if (bookId == -1) {
+            handleInputError();
+            enterToContinue();
+            return false;
+        }
+
+        return markAsAcquired(bookId, pathFileBooks, pathFileWishlist);
+    }
 
 }
