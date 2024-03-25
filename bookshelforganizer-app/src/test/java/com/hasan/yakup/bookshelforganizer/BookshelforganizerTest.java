@@ -634,4 +634,78 @@ public class BookshelforganizerTest {
     assertTrue(result);
   }
 
+  @Test
+  public void testWriteBooksExcludingUser_NoBooksToBorrow_ReturnFalse()
+      throws FileNotFoundException, IOException, ClassNotFoundException {
+
+    // Prepare test data
+    List<Book> testBooks = new ArrayList<>();
+    testBooks.add(new Book(1, "Book1", "Author1", "Genre1", new User(21, "User21", "User1", "example.com", "Qwe123!"),
+        123));
+    testBooks.get(0).setIsBorrowed(true);
+
+    // Write test data to file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathBooks))) {
+      oos.writeObject(testBooks);
+    }
+
+    List<LoanedHistory> testHistories = new ArrayList<>();
+    testHistories.add(new LoanedHistory(1, "Book1", 2, "Owner1", 1, "User1", false, true));
+    // Write test data to file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathHistories))) {
+      oos.writeObject(testHistories);
+    }
+
+    boolean result = library.writeBooksExcludingUser(testFilePathBooks, testFilePathHistories);
+
+    assertFalse(result);
+  }
+
+  @Test
+  public void testWriteBooksExcludingUser_BooksAvailable() throws ClassNotFoundException, IOException {
+    createTestFileBooks();
+
+    boolean result = library.writeBooksExcludingUser(testFilePathBooks, testFilePathHistories);
+
+    assertTrue(result);
+  }
+
+  @Test
+  public void testBookCatalogingMenuOutput() throws InterruptedException, IOException {
+    boolean res = library.bookCatalogingMenu();
+    assertTrue(res);
+  }
+
+  @Test
+  public void testuserOperations_InvalidInputShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "qwe\n4\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.userOperations(testFilePathBooks, testFilePathHistories, testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testuserOperations_InvalidChoiceShouldReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "5\n4\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+
+    // Call the method that handles register menu
+    boolean res = library.userOperations(testFilePathBooks, testFilePathHistories, testFilePathWishlist);
+    assertFalse(res);
+  }
+
 }
