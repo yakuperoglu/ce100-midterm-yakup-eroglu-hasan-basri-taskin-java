@@ -1329,4 +1329,145 @@ public class BookshelforganizerTest {
     assertFalse(res);
   }
 
+  @Test
+  public void testDeleteBookFromWishListMenu_InvalidBookId_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileWishlists();
+    String inputString = "qwe\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles register menu
+    boolean res = library.deleteBookFromWishListMenu(testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testDeleteBookFromWishList_InvalidBookId_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileWishlists();
+    createTestFileBooks();
+    setLoggedUser();
+    // Call the method that handles register menu
+    boolean res = library.deleteBookFromWishlist(123123213, testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testMarkAsAcquiredMenu_EmptyWishlist_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+
+    String inputString = "3\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles register menu
+    boolean res = library.markAsAcquiredMenu(testFilePathBooks, testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testMarkAsAcquiredMenu_InvalidBookId_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileWishlists();
+    String inputString = "qwe\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles register menu
+    boolean res = library.markAsAcquiredMenu(testFilePathBooks, testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testMarkAsAcquiredMenu_HighBookId_ReturnFalse()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    createTestFileWishlists();
+    String inputString = "3213\n";
+    InputStream in = new ByteArrayInputStream(inputString.getBytes());
+    Scanner testScanner = new Scanner(in);
+    library = new Bookshelforganizer(testScanner, new PrintStream(outContent));
+    library.isTestMode = true;
+    library.setLoggedUser(new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"));
+
+    // Call the method that handles register menu
+    boolean res = library.markAsAcquiredMenu(testFilePathBooks, testFilePathWishlist);
+    assertFalse(res);
+  }
+
+  @Test
+  public void testSuggestBooksToBorrow_ThereIsNoCommonBook_SizeEqualZero()
+      throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input and output streams
+    setLoggedUser();
+    // Call the method that handles register menu
+    List<Book> res = library.suggestBooksToBorrow(testFilePathBooks);
+    assertEquals(0, res.size());
+  }
+
+  @Test
+  public void testSearchWishlist_BookFound() throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare a wishlist with some books
+    List<Book> wishlist = new ArrayList<>();
+    wishlist.add(
+        new Book(1, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"), 125));
+    wishlist.add(
+        new Book(1, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"), 125));
+    wishlist.add(
+        new Book(1, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "hasan@gmail.com", "Qwe123!"), 125));
+
+    // Write the wishlist file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathWishlist))) {
+      oos.writeObject(wishlist);
+    }
+
+    // Prepare input parameters
+    boolean result = library.searchWishlist(testFilePathWishlist, "Book2");
+
+    // Check if the book is found
+    assertFalse(result);
+  }
+
+  @Test
+  public void testSearchWishlist_BookNotFound() throws IOException, InterruptedException, ClassNotFoundException {
+    // Prepare input parameters
+    String searchKey = "Book2";
+
+    boolean result = library.searchWishlist("empty_wishlist.bin", searchKey);
+
+    // Check if the book is not found
+    assertFalse(result);
+  }
+
+  @Test
+  public void TestMinCostArrangingBooks_ShouldReturnTrue()
+      throws FileNotFoundException, ClassNotFoundException, IOException, InterruptedException {
+    // Create 3 books
+    List<Book> books = new ArrayList<>();
+    books.add(new Book(1, "Book1", "Necati", "Horror", new User(1, "Hasan", "Taşkın", "qwe", "qwe"), 125));
+    books.add(new Book(2, "Book2", "Ahmet bera", "Advanture", new User(1, "Hasan", "Taşkın", "qwe", "qwe"), 115));
+    books.add(new Book(3, "Book3", "Yakup ", "Horror", new User(1, "Hasan", "Taşkın", "qwe", "qwe"), 5));
+
+    // Write the books to a file
+    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(testFilePathBooks))) {
+      oos.writeObject(books);
+    }
+    boolean result = library.minCostArrangingBooks(testFilePathBooks);
+    assertTrue(result);
+  }
+
 }
